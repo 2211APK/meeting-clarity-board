@@ -1,0 +1,8 @@
+<AnimatedGradientBackground
+  startingGap={125}
+  Breathing={true}
+  animationSpeed={0.02}
+  breathingRange={5}
+  topOffset={0}
+  containerClassName="-z-10"
+/>
