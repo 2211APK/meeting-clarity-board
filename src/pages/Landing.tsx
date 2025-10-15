@@ -35,23 +35,20 @@ export default function Landing() {
         animate={{ y: 0, opacity: 1 }}
         className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl"
       >
-        <div className="bg-card border border-border rounded-2xl shadow-lg px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-              <img src="./logo.svg" alt="Logo" className="h-7 w-7" />
-              <span className="text-lg font-bold text-foreground">ClearPoint</span>
-            </div>
-            <div className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Features
-              </a>
-              <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                How It Works
-              </a>
-              <a href="#get-started" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Get Started
-              </a>
-            </div>
+        <div className="backdrop-blur-md bg-background/80 border border-border/50 rounded-2xl shadow-lg px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
+            <span className="text-lg font-bold text-foreground">ClearPoint</span>
+          </div>
+          <div className="hidden md:flex items-center gap-6">
+            <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Features
+            </a>
+            <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              How It Works
+            </a>
+            <a href="#get-started" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Get Started
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <Button
