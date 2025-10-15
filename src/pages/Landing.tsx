@@ -33,20 +33,20 @@ export default function Landing() {
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl"
+        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl"
       >
-        <div className="backdrop-blur-md bg-background/80 border border-border/50 rounded-2xl shadow-lg px-6 py-3 flex items-center justify-between">
+        <div className="backdrop-blur-xl bg-background/70 border border-border/30 rounded-3xl shadow-2xl px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
             <span className="text-lg font-bold text-foreground">ClearPoint</span>
           </div>
-          <div className="hidden md:flex items-center gap-6">
-            <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               How It Works
             </a>
-            <a href="#get-started" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#get-started" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Get Started
             </a>
           </div>
