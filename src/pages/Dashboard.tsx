@@ -1,0 +1,400 @@
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DroppableStateSnapshot, DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
+import { Loader2, Copy, Check, Sparkles, LogOut } from "lucide-react";
+import { useNavigate } from "react-router";
+import { toast } from "sonner";
+
+type CardType = "decision" | "action" | "question";
+
+interface NoteCard {
+  id: string;
+  content: string;
+  type: CardType;
+}
+
+const EXAMPLE_NOTES = `Meeting Notes - Product Roadmap Discussion (Jan 15, 2024)
+
+Attendees: Sarah, Mike, Jessica, Tom
+
+We decided to move forward with the mobile app redesign for Q1. The team agreed that user feedback has been consistently pointing to navigation issues.
+
+ACTION: Mike will create wireframes by next Friday and share them with the design team.
+
+Should we consider adding dark mode in this release or push it to Q2?
+
+Final decision: We're going with the new color palette that Jessica proposed. It tested better with our target demographic.
+
+TODO: Sarah needs to schedule user testing sessions for the new prototype by end of month.
+
+Question: Do we have budget approval for the additional developer resources?
+
+Tom will reach out to the engineering team about technical feasibility by Wednesday.
+
+We agreed that the launch date will be March 15th, pending no major blockers.
+
+Need to figure out: What's our rollback plan if we encounter critical bugs post-launch?
+
+ACTION: Jessica will draft the marketing timeline and coordinate with the content team.`;
+
+export default function Dashboard() {
+  const { isLoading, isAuthenticated, user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [notes, setNotes] = useState(EXAMPLE_NOTES);
+  const [cards, setCards] = useState<NoteCard[]>([]);
+  const [processing, setProcessing] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate("/auth");
+    }
+  }, [isLoading, isAuthenticated, navigate]);
+
+  const extractCards = (text: string): NoteCard[] => {
+    const lines = text.split("\n").filter(line => line.trim().length > 0);
+    const extractedCards: NoteCard[] = [];
+    let cardId = 0;
+
+    lines.forEach(line => {
+      const trimmedLine = line.trim();
+      
+      // Skip headers and short lines
+      if (trimmedLine.length < 10 || trimmedLine.startsWith("Meeting") || trimmedLine.startsWith("Attendees")) {
+        return;
+      }
+
+      // Check for decisions
+      if (
+        /we decided|agreed that|going with|final decision|we're going with/i.test(trimmedLine)
+      ) {
+        extractedCards.push({
+          id: `card-${cardId++}`,
+          content: trimmedLine,
+          type: "decision"
+        });
+        return;
+      }
+
+      // Check for action items
+      if (
+        /TODO:|ACTION:|will\s+\w+|needs? to|by\s+(next\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|month|end)/i.test(trimmedLine)
+      ) {
+        extractedCards.push({
+          id: `card-${cardId++}`,
+          content: trimmedLine,
+          type: "action"
+        });
+        return;
+      }
+
+      // Check for questions
+      if (
+        trimmedLine.includes("?") ||
+        /should we|need to (figure out|know|understand)|question:|what's|how do we/i.test(trimmedLine)
+      ) {
+        extractedCards.push({
+          id: `card-${cardId++}`,
+          content: trimmedLine,
+          type: "question"
+        });
+      }
+    });
+
+    return extractedCards;
+  };
+
+  const handleProcess = () => {
+    setProcessing(true);
+    setTimeout(() => {
+      const extracted = extractCards(notes);
+      setCards(extracted);
+      setProcessing(false);
+      toast.success(`Extracted ${extracted.length} items from your notes`);
+    }, 800);
+  };
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const sourceType = result.source.droppableId as CardType;
+    const destType = result.destination.droppableId as CardType;
+
+    if (sourceType === destType && result.source.index === result.destination.index) {
+      return;
+    }
+
+    const newCards = Array.from(cards);
+    const sourceCards = newCards.filter(c => c.type === sourceType);
+    const [movedCard] = sourceCards.splice(result.source.index, 1);
+    
+    movedCard.type = destType;
+    
+    const otherCards = newCards.filter(c => c.id !== movedCard.id);
+    const destCards = otherCards.filter(c => c.type === destType);
+    destCards.splice(result.destination.index, 0, movedCard);
+    
+    const finalCards = [
+      ...otherCards.filter(c => c.type !== destType),
+      ...destCards
+    ];
+
+    setCards(finalCards);
+  };
+
+  const handleExport = () => {
+    const decisions = cards.filter(c => c.type === "decision");
+    const actions = cards.filter(c => c.type === "action");
+    const questions = cards.filter(c => c.type === "question");
+
+    let output = "";
+    
+    if (decisions.length > 0) {
+      output += "DECISIONS:\n";
+      decisions.forEach(d => {
+        output += `• ${d.content}\n`;
+      });
+      output += "\n";
+    }
+
+    if (actions.length > 0) {
+      output += "ACTION ITEMS:\n";
+      actions.forEach(a => {
+        output += `• ${a.content}\n`;
+      });
+      output += "\n";
+    }
+
+    if (questions.length > 0) {
+      output += "OPEN QUESTIONS:\n";
+      questions.forEach(q => {
+        output += `• ${q.content}\n`;
+      });
+    }
+
+    navigator.clipboard.writeText(output);
+    setCopied(true);
+    toast.success("Summary copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getCardsByType = (type: CardType) => cards.filter(c => c.type === type);
+
+  const columnConfig = {
+    decision: {
+      title: "🎯 Decisions",
+      bgClass: "bg-purple-500/10 border-purple-500/30",
+      cardBg: "bg-purple-500/20 border-purple-400/40 hover:bg-purple-500/30"
+    },
+    action: {
+      title: "✅ Action Items",
+      bgClass: "bg-green-500/10 border-green-500/30",
+      cardBg: "bg-green-500/20 border-green-400/40 hover:bg-green-500/30"
+    },
+    question: {
+      title: "❓ Questions",
+      bgClass: "bg-yellow-500/10 border-yellow-500/30",
+      cardBg: "bg-yellow-500/20 border-yellow-400/40 hover:bg-yellow-500/30"
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Gradient Background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400 -z-10" />
+      
+      {/* Blurred Circles */}
+      <div className="fixed top-20 left-20 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl -z-10" />
+      <div className="fixed bottom-20 right-20 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl -z-10" />
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl -z-10" />
+
+      {/* Header */}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="backdrop-blur-xl bg-white/10 border-b border-white/20 sticky top-0 z-50"
+      >
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
+            <img src="./logo.svg" alt="Logo" className="h-8 w-8" />
+            <h1 className="text-xl font-bold text-white">Meeting Memory Board</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            {user && (
+              <span className="text-white/80 text-sm hidden sm:block">
+                {user.email || "Guest User"}
+              </span>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => signOut()}
+              className="text-white hover:bg-white/20"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      </motion.header>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Input Section */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8"
+        >
+          <Card className="backdrop-blur-xl bg-white/10 border-white/20 p-6 shadow-2xl">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="h-5 w-5 text-white" />
+              <h2 className="text-lg font-semibold text-white">Paste Your Meeting Notes</h2>
+            </div>
+            <Textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Paste your meeting notes here..."
+              className="min-h-[200px] backdrop-blur-sm bg-white/20 border-white/30 text-white placeholder:text-white/50 resize-none"
+            />
+            <div className="flex gap-3 mt-4">
+              <Button
+                onClick={handleProcess}
+                disabled={processing || !notes.trim()}
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
+              >
+                {processing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Process Notes
+                  </>
+                )}
+              </Button>
+              {cards.length > 0 && (
+                <Button
+                  onClick={handleExport}
+                  variant="outline"
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Summary
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Board Section */}
+        {cards.length > 0 ? (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {(["decision", "action", "question"] as CardType[]).map((type, index) => {
+                const config = columnConfig[type];
+                const columnCards = getCardsByType(type);
+
+                return (
+                  <motion.div
+                    key={type}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
+                  >
+                    <Card className={`backdrop-blur-xl ${config.bgClass} border p-4 shadow-xl min-h-[400px]`}>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold text-white text-lg">
+                          {config.title}
+                        </h3>
+                        <span className="text-sm text-white/70 bg-white/20 px-2 py-1 rounded-full">
+                          {columnCards.length}
+                        </span>
+                      </div>
+
+                      <Droppable droppableId={type}>
+                        {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                            className={`space-y-3 min-h-[300px] rounded-lg p-2 transition-colors ${
+                              snapshot.isDraggingOver ? "bg-white/10" : ""
+                            }`}
+                          >
+                            <AnimatePresence>
+                              {columnCards.map((card, index) => (
+                                <Draggable key={card.id} draggableId={card.id} index={index}>
+                                  {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className={`${config.cardBg} backdrop-blur-sm border rounded-lg p-4 shadow-lg transition-all cursor-move ${
+                                        snapshot.isDragging ? "shadow-2xl scale-105 rotate-2" : ""
+                                      }`}
+                                    >
+                                      <p className="text-white text-sm leading-relaxed">
+                                        {card.content}
+                                      </p>
+                                    </div>
+                                  )}
+                                </Draggable>
+                              ))}
+                            </AnimatePresence>
+                            {provided.placeholder}
+                            {columnCards.length === 0 && (
+                              <div className="text-center text-white/50 text-sm py-8">
+                                No items yet
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </Droppable>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </DragDropContext>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16"
+          >
+            <Card className="backdrop-blur-xl bg-white/10 border-white/20 p-12 max-w-md mx-auto">
+              <Sparkles className="h-12 w-12 text-white/70 mx-auto mb-4" />
+              <p className="text-white/70 text-lg">
+                Process your meeting notes to see them organized into cards
+              </p>
+            </Card>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+}
