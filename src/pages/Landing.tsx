@@ -52,8 +52,10 @@ export default function Landing() {
               >
                 <span className="relative z-10">{item.name}</span>
                 <motion.div
-                  className="absolute inset-0 bg-primary/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  layoutId="navHighlight"
+                  className="absolute inset-0 bg-primary/10 rounded-full"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
                 />
               </a>
             ))}
