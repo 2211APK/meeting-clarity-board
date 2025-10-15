@@ -1,11 +1,12 @@
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { Sparkles, Brain, Zap, Layout, ArrowRight, Sun, Moon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import AnimatedGradientBackground from "@/components/AnimatedGradientBackground";
+import DisplayCards from "@/components/DisplayCards";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ export default function Landing() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [activeTab, setActiveTab] = useState("Features");
   const [isMobile, setIsMobile] = useState(false);
+  const featuresRef = useRef(null);
+  const isInView = useInView(featuresRef, { once: true, amount: 0.3 });
 
   useEffect(() => {
     // Check for saved theme preference or default to light
@@ -175,44 +178,41 @@ export default function Landing() {
 
         {/* Feature Cards */}
         <motion.div
+          ref={featuresRef}
           id="features"
           initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="grid md:grid-cols-3 gap-6 mb-20"
+          animate={isInView ? { y: 0, opacity: 1 } : { y: 40, opacity: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="mb-20"
         >
-          {[
-            {
-              icon: Brain,
-              title: "Smart Extraction",
-              description: "AI-powered pattern recognition automatically categorizes your notes into decisions, actions, and questions."
-            },
-            {
-              icon: Layout,
-              title: "Visual Organization",
-              description: "See everything at a glance with color-coded cards in a beautiful, intuitive board layout."
-            },
-            {
-              icon: Zap,
-              title: "Instant Export",
-              description: "Copy a perfectly formatted summary to share with your team in seconds."
-            }
-          ].map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5 + index * 0.1 }}
-            >
-              <Card className="border border-border p-8 hover:shadow-lg transition-all h-full">
-                <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-              </Card>
-            </motion.div>
-          ))}
+          <h2 className="text-3xl font-bold text-foreground mb-12 text-center">
+            Why Choose ClearPoint?
+          </h2>
+          <DisplayCards
+            cards={[
+              {
+                icon: <Brain className="size-4 text-blue-300" />,
+                title: "Smart Extraction",
+                description: "AI-powered pattern recognition",
+                date: "Automatic categorization",
+                titleClassName: "text-blue-500",
+              },
+              {
+                icon: <Layout className="size-4 text-purple-300" />,
+                title: "Visual Organization",
+                description: "Beautiful board layout",
+                date: "Color-coded cards",
+                titleClassName: "text-purple-500",
+              },
+              {
+                icon: <Zap className="size-4 text-green-300" />,
+                title: "Instant Export",
+                description: "Formatted summaries",
+                date: "Share in seconds",
+                titleClassName: "text-green-500",
+              },
+            ]}
+          />
         </motion.div>
 
         {/* Demo Preview */}
