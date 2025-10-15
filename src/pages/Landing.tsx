@@ -48,7 +48,7 @@ export default function Landing() {
               <a
                 key={item.name}
                 href={item.href}
-                className="relative text-sm font-medium text-muted-foreground hover:text-primary transition-colors px-4 py-2 rounded-full group"
+                className="relative text-sm font-medium text-muted-foreground hover:text-primary transition-colors px-4 py-2 rounded-full group overflow-visible"
               >
                 <span className="relative z-10">{item.name}</span>
                 <motion.div
@@ -57,6 +57,14 @@ export default function Landing() {
                   whileHover={{ opacity: 1 }}
                   transition={{ duration: 0.2 }}
                 />
+                <motion.div
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                >
+                  <div className="absolute w-12 h-6 bg-primary/30 rounded-full blur-lg -top-2 -left-2" />
+                  <div className="absolute w-8 h-4 bg-primary/40 rounded-full blur-md -top-1 left-0" />
+                </motion.div>
               </a>
             ))}
           </div>
