@@ -66,13 +66,13 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> = ({
   startingGap = 125,
   Breathing = false,
   gradientColors = [
-    "#0A0A0A",
-    "#2979FF",
-    "#FF80AB",
-    "#FF6D00",
-    "#FFD600",
-    "#00E676",
-    "#3D5AFE"
+    "#1a1a1a",
+    "#3b82f6",
+    "#ec4899",
+    "#f59e0b",
+    "#eab308",
+    "#10b981",
+    "#6366f1"
   ],
   gradientStops = [35, 50, 60, 70, 80, 90, 100],
   animationSpeed = 0.02,
