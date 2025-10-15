@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { Sparkles, Brain, Zap, Layout, ArrowRight, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
+import AnimatedGradientBackground from "@/components/AnimatedGradientBackground";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -118,7 +119,16 @@ export default function Landing() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section id="hero" className="container mx-auto px-4 pt-32 pb-20 max-w-6xl">
+      <section id="hero" className="container mx-auto px-4 pt-32 pb-20 max-w-6xl relative">
+        <AnimatedGradientBackground
+          startingGap={125}
+          Breathing={true}
+          animationSpeed={0.02}
+          breathingRange={5}
+          topOffset={0}
+          containerClassName="-z-10"
+        />
+        
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
