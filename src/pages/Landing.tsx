@@ -3,11 +3,29 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { Sparkles, Brain, Zap, Layout, ArrowRight } from "lucide-react";
+import { Sparkles, Brain, Zap, Layout, ArrowRight, Sun, Moon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    // Check for saved theme preference or default to light
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme === "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -15,7 +33,7 @@ export default function Landing() {
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl"
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl"
       >
         <div className="bg-card border border-border rounded-2xl shadow-lg px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-8">
@@ -35,15 +53,29 @@ export default function Landing() {
               </a>
             </div>
           </div>
-          <Button
-            onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-            disabled={isLoading}
-            size="sm"
-            className="rounded-full"
-          >
-            {isAuthenticated ? "Dashboard" : "Get Started"}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="rounded-full"
+            >
+              {theme === "light" ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+              disabled={isLoading}
+              size="sm"
+              className="rounded-full"
+            >
+              {isAuthenticated ? "Dashboard" : "Get Started"}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </motion.nav>
 
