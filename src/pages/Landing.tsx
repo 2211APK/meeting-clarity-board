@@ -39,16 +39,24 @@ export default function Landing() {
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
             <span className="text-lg font-bold text-foreground">ClearPoint</span>
           </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Features
-            </a>
-            <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              How It Works
-            </a>
-            <a href="#get-started" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Get Started
-            </a>
+          <div className="hidden md:flex items-center gap-2 relative">
+            {[
+              { name: "Features", href: "#features" },
+              { name: "How It Works", href: "#how-it-works" },
+              { name: "Get Started", href: "#get-started" }
+            ].map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="relative text-sm font-medium text-muted-foreground hover:text-primary transition-colors px-4 py-2 rounded-full group"
+              >
+                <span className="relative z-10">{item.name}</span>
+                <motion.div
+                  className="absolute inset-0 bg-primary/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  layoutId="navHighlight"
+                />
+              </a>
+            ))}
           </div>
           <div className="flex items-center gap-3">
             <Button
