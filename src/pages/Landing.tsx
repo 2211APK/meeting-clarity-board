@@ -13,6 +13,7 @@ import { Logos } from "@/components/Logos";
 import { HandWrittenTitle } from "@/components/HandWrittenTitle";
 import { Timeline } from "@/components/Timeline";
 import { Modal, ModalTrigger, ModalBody, ModalContent, ModalFooter } from "@/components/ui/modal";
+import { BackgroundPaths } from "@/components/BackgroundPaths";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -395,40 +396,12 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-8 mt-20">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground text-sm">
-            Built with{" "}
-            <a
-              href="https://vly.ai"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-foreground hover:text-primary underline transition-colors"
-            >
-              vly.ai
-            </a>
-          </p>
-          
-          <div className="mt-6">
-            <Modal>
-              <ModalTrigger className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-                Open Modal
-              </ModalTrigger>
-              <ModalBody>
-                <ModalContent>
-                  <h2 className="text-2xl font-bold mb-4">Modal Title</h2>
-                  <p className="text-muted-foreground">
-                    This is a sample modal. You can customize the content here.
-                  </p>
-                </ModalContent>
-                <ModalFooter>
-                  <Button variant="outline">Close</Button>
-                </ModalFooter>
-              </ModalBody>
-            </Modal>
-          </div>
-        </div>
-      </footer>
+      <BackgroundPaths
+        title="ClearPoint"
+        subtitle="Join teams who are saving hours every week"
+        buttonText="Start Organizing"
+        onButtonClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+      />
     </div>
   );
 }
