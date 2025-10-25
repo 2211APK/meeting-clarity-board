@@ -170,9 +170,9 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   };
 
   return (
-    <div className="min-h-screen w-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-[#f4c896] via-[#d4a08a] via-[#b87b8e] to-[#5a3a6e]">
-      {/* Background gradient effect - now using warm orange to purple */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#f4c896]/90 via-[#d4a08a]/80 via-[#b87b8e]/70 to-[#5a3a6e]/90" />
+    <div className="min-h-screen w-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-950">
+      {/* Background gradient effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/95 via-blue-900/90 to-indigo-950/95" />
       
       {/* Subtle noise texture overlay */}
       <div className="absolute inset-0 opacity-[0.03] mix-blend-soft-light"
@@ -183,11 +183,11 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       />
 
       {/* Top radial glow */}
-      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120vh] h-[60vh] rounded-b-[50%] bg-purple-400/20 blur-[80px]" />
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[120vh] h-[60vh] rounded-b-[50%] bg-blue-500/30 blur-[100px]" />
       <motion.div 
-        className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[100vh] h-[60vh] rounded-b-full bg-purple-300/20 blur-[60px]"
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 w-[100vh] h-[60vh] rounded-b-full bg-purple-500/25 blur-[80px]"
         animate={{
-          opacity: [0.15, 0.3, 0.15],
+          opacity: [0.2, 0.4, 0.2],
           scale: [0.98, 1.02, 0.98]
         }}
         transition={{
@@ -198,7 +198,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       />
 
       <motion.div 
-        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[90vh] h-[90vh] rounded-t-full bg-purple-400/20 blur-[60px]"
+        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[90vh] h-[90vh] rounded-t-full bg-indigo-500/25 blur-[80px]"
         animate={{
           opacity: [0.3, 0.5, 0.3],
           scale: [1, 1.1, 1]
@@ -212,8 +212,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       />
 
       {/* Animated glow spots */}
-      <div className="absolute left-1/4 top-1/4 w-96 h-96 bg-white/5 rounded-full blur-[100px] animate-pulse opacity-40" />
-      <div className="absolute right-1/4 bottom-1/4 w-96 h-96 bg-white/5 rounded-full blur-[100px] animate-pulse delay-1000 opacity-40" />
+      <div className="absolute left-1/4 top-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-[120px] animate-pulse opacity-50" />
+      <div className="absolute right-1/4 bottom-1/4 w-96 h-96 bg-purple-400/10 rounded-full blur-[120px] animate-pulse delay-1000 opacity-50" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -403,7 +403,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
             <div className="absolute -inset-[0.5px] rounded-2xl bg-gradient-to-r from-white/3 via-white/7 to-white/3 opacity-0 group-hover:opacity-70 transition-opacity duration-500" />
             
             {/* Glass card background */}
-            <div className="relative bg-black/40 backdrop-blur-xl rounded-2xl p-6 border border-white/[0.05] shadow-2xl overflow-hidden">
+            <div className="relative bg-white/[0.08] backdrop-blur-2xl rounded-2xl p-6 border border-white/[0.12] shadow-2xl overflow-hidden">
               {/* Subtle card inner patterns */}
               <div className="absolute inset-0 opacity-[0.03]"
                 style={{
