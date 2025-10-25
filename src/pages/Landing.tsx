@@ -350,43 +350,6 @@ export default function Landing() {
         <Timeline data={timelineData} />
       </section>
 
-      {/* New Glowing Effect Demo Section */}
-      <section className="container mx-auto px-4 max-w-6xl mb-20 mt-32">
-        <motion.div
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.8 }}
-        >
-          <Card className="border border-border p-8 relative overflow-hidden">
-            <GlowingEffect 
-              disabled={false}
-              proximity={200}
-              spread={40}
-              blur={10}
-              glow={true}
-            />
-            <h2 className="text-3xl font-bold text-foreground mb-6 text-center">Interactive Glowing Effect</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6">
-                <div className="text-4xl mb-3">✨</div>
-                <h4 className="text-foreground font-semibold mb-2">Dynamic</h4>
-                <p className="text-muted-foreground text-sm">Responds to your mouse movement</p>
-              </div>
-              <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
-                <div className="text-4xl mb-3">🎨</div>
-                <h4 className="text-foreground font-semibold mb-2">Beautiful</h4>
-                <p className="text-muted-foreground text-sm">Smooth gradient animations</p>
-              </div>
-              <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
-                <div className="text-4xl mb-3">⚡</div>
-                <h4 className="text-foreground font-semibold mb-2">Performant</h4>
-                <p className="text-muted-foreground text-sm">Optimized for smooth experience</p>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-      </section>
-
       {/* Demo Preview */}
       <section id="how-it-works" className="container mx-auto px-4 max-w-6xl mb-20 mt-32">
         <motion.div
