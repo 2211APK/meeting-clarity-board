@@ -14,6 +14,7 @@ import { HandWrittenTitle } from "@/components/HandWrittenTitle";
 import { Timeline } from "@/components/Timeline";
 import { Modal, ModalTrigger, ModalBody, ModalContent, ModalFooter } from "@/components/ui/modal";
 import { BackgroundPaths } from "@/components/BackgroundPaths";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -356,7 +357,14 @@ export default function Landing() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          <Card className="border border-border p-8">
+          <Card className="border border-border p-8 relative overflow-hidden">
+            <GlowingEffect 
+              disabled={false}
+              proximity={200}
+              spread={40}
+              blur={10}
+              glow={true}
+            />
             <h2 className="text-3xl font-bold text-foreground mb-6 text-center">How It Works</h2>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6">
