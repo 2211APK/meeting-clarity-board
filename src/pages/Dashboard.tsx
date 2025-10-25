@@ -364,15 +364,10 @@ export default function Dashboard() {
           </div>
           <div className="flex items-center gap-4">
             {user && (
-              <span className="text-muted-foreground text-sm hidden sm:block">
+              <span className="text-muted-foreground text-sm">
                 {user.email || "Guest User"}
               </span>
             )}
-            <AnimatedLogoutButton
-              onClick={() => signOut()}
-              variant={theme === "light" ? "light" : "dark"}
-              text="Log Out"
-            />
           </div>
         </div>
       </motion.header>
