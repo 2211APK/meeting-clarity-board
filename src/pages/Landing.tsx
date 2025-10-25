@@ -236,7 +236,7 @@ export default function Landing() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold text-foreground mb-4">
-            Loved by Teams Everywhere
+            Loved by People Everywhere
           </h2>
           <p className="text-muted-foreground text-lg">
             See what our users have to say about ClearPoint
