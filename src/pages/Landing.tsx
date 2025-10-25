@@ -3,7 +3,7 @@ import { Button, LiquidButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
-import { Sparkles, Brain, Zap, Layout, ArrowRight, Sun, Moon } from "lucide-react";
+import { Sparkles, Brain, Zap, Layout, ArrowRight, Sun, Moon, Clock } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import DisplayCards from "@/components/DisplayCards";
 import { ContainerScroll } from "@/components/ContainerScroll";
@@ -11,6 +11,7 @@ import { ShimmerButton } from "@/components/ui/shimmer-button";
 import VaporizeTextCycle, { Tag } from "@/components/VaporizeTextCycle";
 import { Logos } from "@/components/Logos";
 import { HandWrittenTitle } from "@/components/HandWrittenTitle";
+import { Timeline } from "@/components/Timeline";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -44,6 +45,51 @@ export default function Landing() {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
+  const timelineData = [
+    {
+      title: "2024",
+      content: (
+        <div>
+          <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8">
+            Launched ClearPoint to help teams organize meeting notes efficiently
+          </p>
+          <div className="grid grid-cols-2 gap-4">
+            <img
+              src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&h=500&fit=crop"
+              alt="startup"
+              className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow"
+            />
+            <img
+              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=500&fit=crop"
+              alt="team meeting"
+              className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow"
+            />
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Early 2024",
+      content: (
+        <div>
+          <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
+            Built the core features: Smart extraction, visual organization, and instant export
+          </p>
+        </div>
+      ),
+    },
+    {
+      title: "Late 2023",
+      content: (
+        <div>
+          <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
+            Started the journey to transform how teams handle meeting notes
+          </p>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       {/* Floating Navigation Bar */}
@@ -62,6 +108,7 @@ export default function Landing() {
               {[
                 { name: "Features", href: "#features", icon: Sparkles },
                 { name: "How It Works", href: "#how-it-works", icon: Layout },
+                { name: "Timeline", href: "#timeline", icon: Clock },
                 { name: "Get Started", href: "#get-started", icon: Zap },
               ].map((item) => {
                 const Icon = item.icon;
@@ -293,6 +340,11 @@ export default function Landing() {
             </motion.div>
           ))}
         </div>
+      </section>
+
+      {/* Timeline Section */}
+      <section id="timeline" className="container mx-auto px-4 max-w-6xl mb-20">
+        <Timeline data={timelineData} />
       </section>
 
       {/* Demo Preview */}
