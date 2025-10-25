@@ -30,14 +30,29 @@ const schema = defineSchema(
       isAnonymous: v.optional(v.boolean()), // is the user anonymous. do not remove
 
       role: v.optional(roleValidator), // role of the user. do not remove
+      usageType: v.optional(v.union(v.literal("meetings"), v.literal("school"))), // user's chosen usage type
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
-    // add other tables here
+    // Chat messages table
+    messages: defineTable({
+      userId: v.id("users"),
+      userName: v.string(),
+      content: v.string(),
+      usageType: v.string(), // "meetings" or "school" to separate chat rooms
+    }).index("by_usage_type", ["usageType"]),
 
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
+    // Tasks table
+    tasks: defineTable({
+      userId: v.string(),
+      title: v.string(),
+      description: v.optional(v.string()),
+      importance: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
+      deadline: v.optional(v.number()),
+      time: v.optional(v.string()),
+      completed: v.boolean(),
+      completedAt: v.optional(v.number()),
+      usageType: v.string(),
+    }).index("by_user_and_usage", ["userId", "usageType"]),
   },
   {
     schemaValidation: false,

@@ -124,3 +124,70 @@
     cursor: pointer;
   }
 }
+
+@keyframes liquid {
+  0%, 100% { 
+    transform: translateY(-10%) rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(10%) rotate(3deg); 
+  }
+}
+
+@keyframes shimmer-slide {
+  to {
+    translate: calc(-50cqw - 50%) 0;
+  }
+}
+
+@keyframes spin-around {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes loaderAnim {
+  0% {
+    inset: 0 35px 35px 0;
+  }
+  12.5% {
+    inset: 0 35px 0 0;
+  }
+  25% {
+    inset: 35px 35px 0 0;
+  }
+  37.5% {
+    inset: 35px 0 0 0;
+  }
+  50% {
+    inset: 35px 0 0 35px;
+  }
+  62.5% {
+    inset: 0 0 0 35px;
+  }
+  75% {
+    inset: 0 0 35px 35px;
+  }
+  87.5% {
+    inset: 0 0 35px 0;
+  }
+  100% {
+    inset: 0 35px 35px 0;
+  }
+}
+
+.animate-shimmer-slide {
+  animation: shimmer-slide var(--speed) ease-in-out infinite alternate;
+}
+
+.animate-spin-around {
+  animation: spin-around var(--speed) linear infinite;
+}
+
+.animate-loaderAnim {
+  animation: loaderAnim 2.5s infinite;
+}
+
+.animation-delay {
+  animation-delay: -1.25s;
+}

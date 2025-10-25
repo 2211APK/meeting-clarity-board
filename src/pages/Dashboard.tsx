@@ -5,9 +5,16 @@ import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DroppableStateSnapshot, DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
-import { Loader2, Copy, Check, Sparkles, LogOut } from "lucide-react";
+import { Loader2, Copy, Check, Sparkles, LogOut, Home, FileText, Settings, MessageCircle, Calendar as CalendarIcon, Sun, Moon, CheckSquare } from "lucide-react";
+import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
+import OnboardingModal from "@/components/OnboardingModal";
+import ChatPanel from "@/components/ChatPanel";
+import { Calendar } from "@/components/Calendar";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import TaskPanel from "@/components/TaskPanel";
+import { Loader } from "@/components/ui/loader";
 
 type CardType = "decision" | "action" | "question";
 
@@ -48,12 +55,40 @@ export default function Dashboard() {
   const [cards, setCards] = useState<NoteCard[]>([]);
   const [processing, setProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isTasksOpen, setIsTasksOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    // Check for saved theme preference or default to light
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme === "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
+  };
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
+
+  useEffect(() => {
+    // Show onboarding if user doesn't have a usageType set
+    if (user && !user.usageType) {
+      setShowOnboarding(true);
+    }
+  }, [user]);
 
   const extractCards = (text: string): NoteCard[] => {
     const lines = text.split("\n").filter(line => line.trim().length > 0);
@@ -205,35 +240,130 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Gradient Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-400 via-pink-300 to-blue-400 -z-10" />
-      
-      {/* Blurred Circles */}
-      <div className="fixed top-20 left-20 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl -z-10" />
-      <div className="fixed bottom-20 right-20 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl -z-10" />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl -z-10" />
+    <div className="min-h-screen relative overflow-hidden bg-background">
+      {/* Onboarding Modal */}
+      {showOnboarding && (
+        <OnboardingModal onComplete={() => setShowOnboarding(false)} />
+      )}
+
+      {/* Chat Panel - Only show for meetings users */}
+      {user?.usageType === "meetings" && (
+        <ChatPanel usageType="meetings" isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      )}
+
+      {/* Task Panel */}
+      {user?.usageType && (
+        <TaskPanel 
+          usageType={user.usageType} 
+          isOpen={isTasksOpen} 
+          onClose={() => setIsTasksOpen(false)} 
+        />
+      )}
+
+      {/* Top Dock Navigation */}
+      <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50">
+        <Dock magnification={60} distance={100} className="pointer-events-auto">
+          <DockItem>
+            <DockLabel>Home</DockLabel>
+            <DockIcon>
+              <div onClick={() => navigate("/")} className="cursor-pointer">
+                <Home className="h-5 w-5" />
+              </div>
+            </DockIcon>
+          </DockItem>
+          <DockItem>
+            <DockLabel>Dashboard</DockLabel>
+            <DockIcon>
+              <div onClick={() => {
+                setIsChatOpen(false);
+                setIsCalendarOpen(false);
+                setIsTasksOpen(false);
+              }} className="cursor-pointer">
+                <FileText className="h-5 w-5" />
+              </div>
+            </DockIcon>
+          </DockItem>
+          {user?.usageType === "meetings" && (
+            <>
+              <DockItem>
+                <DockLabel>Chat</DockLabel>
+                <DockIcon>
+                  <div onClick={() => {
+                    setIsChatOpen(!isChatOpen);
+                    setIsCalendarOpen(false);
+                    setIsTasksOpen(false);
+                  }} className="cursor-pointer">
+                    <MessageCircle className="h-5 w-5" />
+                  </div>
+                </DockIcon>
+              </DockItem>
+              <DockItem>
+                <DockLabel>Calendar</DockLabel>
+                <DockIcon>
+                  <div onClick={() => {
+                    setIsCalendarOpen(!isCalendarOpen);
+                    setIsChatOpen(false);
+                    setIsTasksOpen(false);
+                  }} className="cursor-pointer">
+                    <CalendarIcon className="h-5 w-5" />
+                  </div>
+                </DockIcon>
+              </DockItem>
+            </>
+          )}
+          <DockItem>
+            <DockLabel>Tasks</DockLabel>
+            <DockIcon>
+              <div onClick={() => {
+                setIsTasksOpen(!isTasksOpen);
+                setIsChatOpen(false);
+                setIsCalendarOpen(false);
+              }} className="cursor-pointer">
+                <CheckSquare className="h-5 w-5" />
+              </div>
+            </DockIcon>
+          </DockItem>
+          <DockItem>
+            <DockLabel>Theme</DockLabel>
+            <DockIcon>
+              <div onClick={toggleTheme} className="cursor-pointer">
+                {theme === "light" ? (
+                  <Moon className="h-5 w-5" />
+                ) : (
+                  <Sun className="h-5 w-5" />
+                )}
+              </div>
+            </DockIcon>
+          </DockItem>
+          <DockItem>
+            <DockLabel>Settings</DockLabel>
+            <DockIcon>
+              <Settings className="h-5 w-5" />
+            </DockIcon>
+          </DockItem>
+        </Dock>
+      </div>
 
       {/* Header */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="backdrop-blur-xl bg-white/10 border-b border-white/20 sticky top-0 z-50"
+        className="backdrop-blur-xl bg-card/50 border-b border-border sticky top-0 z-50"
       >
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
             <img src="./logo.svg" alt="Logo" className="h-8 w-8" />
-            <h1 className="text-xl font-bold text-white">Meeting Memory Board</h1>
+            <h1 className="text-xl font-bold text-foreground">Meeting Memory Board</h1>
           </div>
           <div className="flex items-center gap-4">
             {user && (
-              <span className="text-white/80 text-sm hidden sm:block">
+              <span className="text-muted-foreground text-sm hidden sm:block">
                 {user.email || "Guest User"}
               </span>
             )}
@@ -241,7 +371,6 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               onClick={() => signOut()}
-              className="text-white hover:bg-white/20"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
@@ -252,147 +381,163 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Input Section */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="mb-8"
-        >
-          <Card className="backdrop-blur-xl bg-white/10 border-white/20 p-6 shadow-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-5 w-5 text-white" />
-              <h2 className="text-lg font-semibold text-white">Paste Your Meeting Notes</h2>
-            </div>
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Paste your meeting notes here..."
-              className="min-h-[200px] backdrop-blur-sm bg-white/20 border-white/30 text-white placeholder:text-white/50 resize-none"
-            />
-            <div className="flex gap-3 mt-4">
-              <Button
-                onClick={handleProcess}
-                disabled={processing || !notes.trim()}
-                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
-              >
-                {processing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Process Notes
-                  </>
-                )}
-              </Button>
-              {cards.length > 0 && (
-                <Button
-                  onClick={handleExport}
-                  variant="outline"
-                  className="bg-white/10 hover:bg-white/20 text-white border-white/30 backdrop-blur-sm"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Summary
-                    </>
-                  )}
-                </Button>
-              )}
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Board Section */}
-        {cards.length > 0 ? (
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {(["decision", "action", "question"] as CardType[]).map((type, index) => {
-                const config = columnConfig[type];
-                const columnCards = getCardsByType(type);
-
-                return (
-                  <motion.div
-                    key={type}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 + index * 0.1 }}
+        {/* Calendar Section - Only for meetings users */}
+        {user?.usageType === "meetings" && isCalendarOpen ? (
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ delay: 0.05 }}
+            className="mb-8"
+          >
+            <Calendar />
+          </motion.div>
+        ) : (
+          <>
+            {/* Input Section */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="mb-8"
+            >
+              <Card className="backdrop-blur-xl bg-card border-border p-6 shadow-lg">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
+                </div>
+                <Textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Type Here..."
+                  className="min-h-[200px] resize-none"
+                />
+                <div className="flex gap-3 mt-4">
+                  <HoverBorderGradient
+                    as="button"
+                    onClick={handleProcess}
+                    containerClassName={processing || !notes.trim() ? "opacity-50 cursor-not-allowed" : ""}
+                    className="text-sm font-medium"
+                    style={processing || !notes.trim() ? { pointerEvents: 'none' } : {}}
                   >
-                    <Card className={`backdrop-blur-xl ${config.bgClass} border p-4 shadow-xl min-h-[400px]`}>
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold text-white text-lg">
-                          {config.title}
-                        </h3>
-                        <span className="text-sm text-white/70 bg-white/20 px-2 py-1 rounded-full">
-                          {columnCards.length}
-                        </span>
-                      </div>
+                    {processing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Process Notes
+                      </>
+                    )}
+                  </HoverBorderGradient>
+                  {cards.length > 0 && (
+                    <Button
+                      onClick={handleExport}
+                      variant="outline"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="h-4 w-4 mr-2" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy Summary
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            </motion.div>
 
-                      <Droppable droppableId={type}>
-                        {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className={`space-y-3 min-h-[300px] rounded-lg p-2 transition-colors ${
-                              snapshot.isDraggingOver ? "bg-white/10" : ""
-                            }`}
-                          >
-                            <AnimatePresence>
-                              {columnCards.map((card, index) => (
-                                <Draggable key={card.id} draggableId={card.id} index={index}>
-                                  {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      className={`${config.cardBg} backdrop-blur-sm border rounded-lg p-4 shadow-lg transition-all cursor-move ${
-                                        snapshot.isDragging ? "shadow-2xl scale-105 rotate-2" : ""
-                                      }`}
-                                    >
-                                      <p className="text-white text-sm leading-relaxed">
-                                        {card.content}
-                                      </p>
-                                    </div>
-                                  )}
-                                </Draggable>
-                              ))}
-                            </AnimatePresence>
-                            {provided.placeholder}
-                            {columnCards.length === 0 && (
-                              <div className="text-center text-white/50 text-sm py-8">
-                                No items yet
+            {/* Board Section */}
+            {cards.length > 0 ? (
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {(["decision", "action", "question"] as CardType[]).map((type, index) => {
+                    const config = columnConfig[type];
+                    const columnCards = getCardsByType(type);
+
+                    return (
+                      <motion.div
+                        key={type}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2 + index * 0.1 }}
+                      >
+                        <Card className={`backdrop-blur-xl ${config.bgClass} border p-4 shadow-xl min-h-[400px]`}>
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-foreground text-lg">
+                              {config.title}
+                            </h3>
+                            <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                              {columnCards.length}
+                            </span>
+                          </div>
+
+                          <Droppable droppableId={type}>
+                            {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                className={`space-y-3 min-h-[300px] rounded-lg p-2 transition-colors ${
+                                  snapshot.isDraggingOver ? "bg-white/10" : ""
+                                }`}
+                              >
+                                <AnimatePresence>
+                                  {columnCards.map((card, index) => (
+                                    <Draggable key={card.id} draggableId={card.id} index={index}>
+                                      {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                          className={`${config.cardBg} backdrop-blur-sm border rounded-lg p-4 shadow-lg transition-all cursor-move ${
+                                            snapshot.isDragging ? "shadow-2xl scale-105 rotate-2" : ""
+                                          }`}
+                                        >
+                                          <p className="text-foreground text-sm leading-relaxed">
+                                            {card.content}
+                                          </p>
+                                        </div>
+                                      )}
+                                    </Draggable>
+                                  ))}
+                                </AnimatePresence>
+                                {provided.placeholder}
+                                {columnCards.length === 0 && (
+                                  <div className="text-center text-muted-foreground text-sm py-8">
+                                    No items yet
+                                  </div>
+                                )}
                               </div>
                             )}
-                          </div>
-                        )}
-                      </Droppable>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </DragDropContext>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
-          >
-            <Card className="backdrop-blur-xl bg-white/10 border-white/20 p-12 max-w-md mx-auto">
-              <Sparkles className="h-12 w-12 text-white/70 mx-auto mb-4" />
-              <p className="text-white/70 text-lg">
-                Process your meeting notes to see them organized into cards
-              </p>
-            </Card>
-          </motion.div>
+                          </Droppable>
+                        </Card>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </DragDropContext>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-16"
+              >
+                <Card className="backdrop-blur-xl bg-card border-border p-12 max-w-md mx-auto">
+                  <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground text-lg">
+                    Process your meeting notes to see them organized into cards
+                  </p>
+                </Card>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
     </div>

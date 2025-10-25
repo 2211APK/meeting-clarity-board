@@ -1,12 +1,16 @@
 import { motion, useInView } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { Button, LiquidButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { Sparkles, Brain, Zap, Layout, ArrowRight, Sun, Moon } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
-import AnimatedGradientBackground from "@/components/AnimatedGradientBackground";
 import DisplayCards from "@/components/DisplayCards";
+import { ContainerScroll } from "@/components/ContainerScroll";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
+import VaporizeTextCycle, { Tag } from "@/components/VaporizeTextCycle";
+import { Logos } from "@/components/Logos";
+import { HandWrittenTitle } from "@/components/HandWrittenTitle";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -108,30 +112,20 @@ export default function Landing() {
                 <Sun className="h-4 w-4" />
               )}
             </Button>
-            <Button
+            <ShimmerButton
               onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
               disabled={isLoading}
-              size="sm"
-              className="rounded-full"
+              className="text-sm"
             >
               {isAuthenticated ? "Dashboard" : "Get Started"}
               <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            </ShimmerButton>
           </div>
         </div>
       </motion.nav>
 
       {/* Hero Section */}
-      <section id="hero" className="container mx-auto px-4 pt-32 pb-20 max-w-6xl relative">
-        <AnimatedGradientBackground
-          startingGap={125}
-          Breathing={true}
-          animationSpeed={0.02}
-          breathingRange={5}
-          topOffset={0}
-          containerClassName="-z-10"
-        />
-        
+      <section className="container mx-auto px-4 pt-32 pb-20 max-w-6xl">
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -150,78 +144,165 @@ export default function Landing() {
               Crystal Clear Action
             </span>
           </h1>
-          
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Paste your messy meeting notes and watch as AI instantly organizes them into decisions, action items, and questions. No more scrolling through walls of text.
-          </p>
 
-          <div className="flex gap-4 justify-center flex-wrap">
-            <Button
-              size="lg"
+          <div className="flex gap-4 justify-center flex-wrap mb-12">
+            <LiquidButton
               onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-              className="text-lg px-8 py-6 rounded-full"
+              className="text-lg"
             >
-              <Sparkles className="mr-2 h-5 w-5" />
+              <Sparkles className="mr-2 h-5 w-5 inline" />
               {isAuthenticated ? "Go to Dashboard" : "Start Organizing"}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => navigate("/dashboard")}
-              className="text-lg px-8 py-6 rounded-full"
-            >
-              See Demo
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            </LiquidButton>
+          </div>
+
+          {/* Feature Cards - Directly Under Buttons */}
+          <div className="flex justify-center mt-16">
+            <div className="scale-125">
+              <DisplayCards
+                cards={[
+                  {
+                    icon: <Brain className="size-4 text-blue-300" />,
+                    title: "Smart Extraction",
+                    description: "AI-powered objectives identification",
+                    date: "Automatic categorization",
+                    titleClassName: "text-blue-500",
+                    className: "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
+                  },
+                  {
+                    icon: <Layout className="size-4 text-purple-300" />,
+                    title: "Visual Organization",
+                    description: "Beautiful board layout",
+                    date: "Color-coded cards",
+                    titleClassName: "text-purple-500",
+                    className: "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
+                  },
+                  {
+                    icon: <Zap className="size-4 text-green-300" />,
+                    title: "Instant Export",
+                    description: "Formatted summaries",
+                    date: "Share in seconds",
+                    titleClassName: "text-green-500",
+                    className: "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+                  },
+                ]}
+              />
+            </div>
           </div>
         </motion.div>
+      </section>
 
-        {/* Feature Cards */}
-        <motion.div
-          ref={featuresRef}
-          id="features"
-          initial={{ y: 40, opacity: 0 }}
-          animate={isInView ? { y: 0, opacity: 1 } : { y: 40, opacity: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-          className="mb-20"
+      {/* Scroll Transition Container */}
+      <section className="container mx-auto px-4 max-w-6xl">
+        <ContainerScroll
+          titleComponent={
+            <div className="h-20 flex items-center justify-center">
+              <VaporizeTextCycle
+                texts={["Bringing Efficiency To You"]}
+                font={{
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "48px",
+                  fontWeight: 700
+                }}
+                color={theme === "dark" ? "rgb(255, 255, 255)" : "hsl(var(--foreground))"}
+                spread={5}
+                density={5}
+                animation={{
+                  vaporizeDuration: 2,
+                  fadeInDuration: 1,
+                  waitDuration: 0.5
+                }}
+                direction="left-to-right"
+                alignment="center"
+                tag={Tag.H2}
+              />
+            </div>
+          }
         >
-          <h2 className="text-3xl font-bold text-foreground mb-12 text-center">
-            Why Choose ClearPoint?
+          <div className="flex justify-center items-center h-full">
+            {/* Placeholder for scroll effect */}
+          </div>
+        </ContainerScroll>
+      </section>
+
+      {/* Logos Section */}
+      <Logos heading="Trusted by teams everywhere" />
+
+      {/* Testimonials Section */}
+      <section className="container mx-auto px-4 max-w-6xl mb-20">
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl font-bold text-foreground mb-4">
+            Loved by Teams Everywhere
           </h2>
-          <DisplayCards
-            cards={[
-              {
-                icon: <Brain className="size-4 text-blue-300" />,
-                title: "Smart Extraction",
-                description: "AI-powered pattern recognition",
-                date: "Automatic categorization",
-                titleClassName: "text-blue-500",
-              },
-              {
-                icon: <Layout className="size-4 text-purple-300" />,
-                title: "Visual Organization",
-                description: "Beautiful board layout",
-                date: "Color-coded cards",
-                titleClassName: "text-purple-500",
-              },
-              {
-                icon: <Zap className="size-4 text-green-300" />,
-                title: "Instant Export",
-                description: "Formatted summaries",
-                date: "Share in seconds",
-                titleClassName: "text-green-500",
-              },
-            ]}
-          />
+          <p className="text-muted-foreground text-lg">
+            See what our users have to say about ClearPoint
+          </p>
         </motion.div>
 
-        {/* Demo Preview */}
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            {
+              name: "Sarah Chen",
+              role: "Product Manager",
+              company: "TechCorp",
+              content: "ClearPoint has transformed how we handle meeting notes. What used to take 30 minutes now takes 5. The automatic categorization is incredibly accurate!",
+              avatar: "SC"
+            },
+            {
+              name: "Michael Rodriguez",
+              role: "Engineering Lead",
+              company: "StartupXYZ",
+              content: "The drag-and-drop interface makes organizing action items effortless. Our team's productivity has increased significantly since we started using ClearPoint.",
+              avatar: "MR"
+            },
+            {
+              name: "Emily Watson",
+              role: "Project Coordinator",
+              company: "Global Solutions",
+              content: "I love how ClearPoint separates decisions, actions, and questions. It's exactly what we needed to keep our meetings focused and actionable.",
+              avatar: "EW"
+            }
+          ].map((testimonial, index) => (
+            <motion.div
+              key={testimonial.name}
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.7 + index * 0.1 }}
+            >
+              <Card className="border border-border p-6 h-full hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-primary font-semibold text-sm">
+                      {testimonial.avatar}
+                    </span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
+                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    <p className="text-xs text-muted-foreground">{testimonial.company}</p>
+                  </div>
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  "{testimonial.content}"
+                </p>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Demo Preview */}
+      <section className="container mx-auto px-4 max-w-6xl">
         <motion.div
           id="how-it-works"
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="mb-20"
+          className="mb-20 mt-32"
         >
           <Card className="border border-border p-8">
             <h2 className="text-3xl font-bold text-foreground mb-6 text-center">How It Works</h2>
@@ -253,22 +334,10 @@ export default function Landing() {
           transition={{ delay: 1 }}
           className="text-center"
         >
-          <Card className="border border-border p-12">
-            <h2 className="text-4xl font-bold text-foreground mb-4">
-              Ready to organize your meetings?
-            </h2>
-            <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-              Join teams who are saving hours every week with ClearPoint
-            </p>
-            <Button
-              size="lg"
-              onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-              className="text-lg px-8 py-6 rounded-full"
-            >
-              <Sparkles className="mr-2 h-5 w-5" />
-              {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
-            </Button>
-          </Card>
+          <HandWrittenTitle
+            title="ClearPoint"
+            subtitle="Join teams who are saving hours every week"
+          />
         </motion.div>
       </section>
 
