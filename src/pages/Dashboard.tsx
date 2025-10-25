@@ -15,6 +15,7 @@ import { Calendar } from "@/components/Calendar";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import TaskPanel from "@/components/TaskPanel";
 import { Loader } from "@/components/ui/loader";
+import { AnimatedLogoutButton } from "@/components/ui/animated-logout-button";
 
 type CardType = "decision" | "action" | "question";
 
@@ -367,14 +368,11 @@ export default function Dashboard() {
                 {user.email || "Guest User"}
               </span>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
+            <AnimatedLogoutButton
               onClick={() => signOut()}
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
+              variant={theme === "light" ? "light" : "dark"}
+              text="Log Out"
+            />
           </div>
         </div>
       </motion.header>

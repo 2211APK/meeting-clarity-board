@@ -176,6 +176,18 @@
   }
 }
 
+@keyframes shake {
+  0% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+  100% {
+    transform: rotate(-1deg);
+  }
+}
+
 .animate-shimmer-slide {
   animation: shimmer-slide var(--speed) ease-in-out infinite alternate;
 }
@@ -186,6 +198,10 @@
 
 .animate-loaderAnim {
   animation: loaderAnim 2.5s infinite;
+}
+
+.animate-shake {
+  animation: shake 200ms linear;
 }
 
 .animation-delay {
