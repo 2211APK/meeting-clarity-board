@@ -350,13 +350,11 @@ export default function Landing() {
       </section>
 
       {/* Demo Preview */}
-      <section className="container mx-auto px-4 max-w-6xl">
+      <section id="how-it-works" className="container mx-auto px-4 max-w-6xl mb-20 mt-32">
         <motion.div
-          id="how-it-works"
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="mb-20 mt-32"
         >
           <Card className="border border-border p-8">
             <h2 className="text-3xl font-bold text-foreground mb-6 text-center">How It Works</h2>
@@ -378,20 +376,6 @@ export default function Landing() {
               </div>
             </div>
           </Card>
-        </motion.div>
-
-        {/* CTA Section */}
-        <motion.div
-          id="get-started"
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="text-center"
-        >
-          <HandWrittenTitle
-            title="ClearPoint"
-            subtitle="Join teams who are saving hours every week"
-          />
         </motion.div>
       </section>
 
