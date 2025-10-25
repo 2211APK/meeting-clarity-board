@@ -16,6 +16,7 @@ import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import TaskPanel from "@/components/TaskPanel";
 import { Loader } from "@/components/ui/loader";
 import { AnimatedLogoutButton } from "@/components/ui/animated-logout-button";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 
 type CardType = "decision" | "action" | "question";
 
@@ -368,6 +369,11 @@ export default function Dashboard() {
                 {user.email || "Guest User"}
               </span>
             )}
+            <InteractiveHoverButton 
+              text="Log Out" 
+              onClick={signOut}
+              className="w-28"
+            />
           </div>
         </div>
       </motion.header>
