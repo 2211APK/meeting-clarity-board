@@ -42,8 +42,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
           Changelog from my journey
         </h2>
         <p className="text-neutral-700 dark:text-neutral-300 text-sm md:text-base max-w-sm">
-          I&apos;ve been working on Aceternity for the past 2 years. Here&apos;s
-          a timeline of my journey.
+          This was written on 25/10/25 when I first started working on this. Here&apos;s a timeline of my journey.
         </p>
       </div>
       <div ref={ref} className="relative max-w-7xl mx-auto pb-20">
