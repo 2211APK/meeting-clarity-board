@@ -15,7 +15,7 @@ import { Timeline } from "@/components/Timeline";
 import { Modal, ModalTrigger, ModalBody, ModalContent, ModalFooter } from "@/components/ui/modal";
 import { BackgroundPaths } from "@/components/BackgroundPaths";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { ScrollProgress } from "@/components/ui/scroll-progress";
+import { TextLoop } from "@/components/ui/text-loop";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -175,9 +175,6 @@ export default function Landing() {
         </div>
       </motion.nav>
 
-      {/* Scroll Progress Bar */}
-      <ScrollProgress className="top-[65px]" />
-
       {/* Hero Section */}
       <section className="container mx-auto px-4 pt-32 pb-20 max-w-6xl">
         <motion.div
@@ -251,7 +248,10 @@ export default function Landing() {
           titleComponent={
             <div className="h-20 flex items-center justify-center">
               <h2 className="text-5xl font-bold text-foreground">
-                Bringing Efficiency To You
+                <TextLoop interval={3}>
+                  <span>Bringing Efficiency To You</span>
+                  <span>Organise Your Thoughts</span>
+                </TextLoop>
               </h2>
             </div>
           }
