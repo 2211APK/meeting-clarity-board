@@ -140,20 +140,6 @@ export default function Landing() {
         </div>
       ),
     },
-    {
-      title: "Real-time Collaboration",
-      description:
-        "Work together seamlessly with your team. Changes sync instantly, ensuring everyone stays on the same page. No more confusion about who's working on what or which version is current.",
-      content: (
-        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] text-white">
-          <img
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=500&fit=crop"
-            alt="Collaboration demo"
-            className="h-full w-full object-cover"
-          />
-        </div>
-      ),
-    },
   ];
 
   return (
