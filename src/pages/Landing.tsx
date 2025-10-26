@@ -192,7 +192,7 @@ export default function Landing() {
           
           <TextScramble
             as="h1"
-            className="text-5xl md:text-7xl font-semibold text-foreground mb-6 tracking-tight -mt-4"
+            className="text-5xl md:text-7xl font-semibold text-foreground mb-6 tracking-tight -mt-8"
             duration={1.2}
             speed={0.04}
           >
@@ -219,7 +219,7 @@ export default function Landing() {
           </div>
 
           {/* Feature Cards - Directly Under Buttons */}
-          <div className="flex justify-center mt-16">
+          <div className="flex justify-center mt-20">
             <div className="scale-125">
               <DisplayCards
                 cards={[
