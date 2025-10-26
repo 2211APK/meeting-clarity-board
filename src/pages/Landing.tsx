@@ -246,7 +246,7 @@ export default function Landing() {
       <section className="container mx-auto px-4 max-w-6xl">
         <ContainerScroll
           titleComponent={
-            <div className="h-20 flex items-center justify-center">
+            <div className="h-20 flex items-center justify-center -mt-8">
               <h2 className="text-5xl font-bold text-foreground">
                 <TextLoop interval={3}>
                   <span>Bringing Efficiency To You</span>
