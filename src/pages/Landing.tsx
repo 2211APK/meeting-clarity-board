@@ -142,6 +142,38 @@ export default function Landing() {
     },
   ];
 
+  // Mobile warning screen
+  if (isMobile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-6">
+        <Card className="max-w-md p-8 text-center space-y-6">
+          <div className="flex justify-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <Layout className="w-8 h-8 text-primary" />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <h1 className="text-2xl font-bold text-foreground">
+              📱 Mobile Not Supported
+            </h1>
+            <p className="text-muted-foreground leading-relaxed">
+              Mobile is currently not supported.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              Please try again on desktop.
+            </p>
+            <p className="text-sm text-muted-foreground mt-4">
+              Sorry for the inconvenience caused!
+            </p>
+            <p className="text-sm font-semibold text-foreground">
+              - ClearPoint
+            </p>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       {/* Floating Navigation Bar */}
