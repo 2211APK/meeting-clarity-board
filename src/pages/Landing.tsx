@@ -15,7 +15,6 @@ import { HandWrittenTitle } from "@/components/HandWrittenTitle";
 import { Timeline } from "@/components/Timeline";
 import { Modal, ModalTrigger, ModalBody, ModalContent, ModalFooter } from "@/components/ui/modal";
 import { BackgroundPaths } from "@/components/BackgroundPaths";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
@@ -301,13 +300,6 @@ export default function Landing() {
         <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2">
           <li className="min-h-[14rem] list-none md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]">
             <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
-              <GlowingEffect
-                spread={40}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
               <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
                 <div className="relative flex flex-1 flex-col justify-between gap-3">
                   <div className="w-fit rounded-lg border border-border p-2">
@@ -328,13 +320,6 @@ export default function Landing() {
 
           <li className="min-h-[14rem] list-none md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]">
             <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
-              <GlowingEffect
-                spread={40}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
               <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
                 <div className="relative flex flex-1 flex-col justify-between gap-3">
                   <div className="w-fit rounded-lg border border-border p-2">
@@ -355,13 +340,6 @@ export default function Landing() {
 
           <li className="min-h-[14rem] list-none md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]">
             <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
-              <GlowingEffect
-                spread={40}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
               <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
                 <div className="relative flex flex-1 flex-col justify-between gap-3">
                   <div className="w-fit rounded-lg border border-border p-2">
@@ -382,13 +360,6 @@ export default function Landing() {
 
           <li className="min-h-[14rem] list-none md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]">
             <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
-              <GlowingEffect
-                spread={40}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
               <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
                 <div className="relative flex flex-1 flex-col justify-between gap-3">
                   <div className="w-fit rounded-lg border border-border p-2">
@@ -409,13 +380,6 @@ export default function Landing() {
 
           <li className="min-h-[14rem] list-none md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]">
             <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
-              <GlowingEffect
-                spread={40}
-                glow={true}
-                disabled={false}
-                proximity={64}
-                inactiveZone={0.01}
-              />
               <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
                 <div className="relative flex flex-1 flex-col justify-between gap-3">
                   <div className="w-fit rounded-lg border border-border p-2">
@@ -539,14 +503,7 @@ export default function Landing() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          <Card className="border border-border p-8 relative overflow-hidden">
-            <GlowingEffect 
-              disabled={false}
-              proximity={200}
-              spread={40}
-              blur={10}
-              glow={true}
-            />
+          <Card className="border border-border p-8">
             <h2 className="text-3xl font-bold text-foreground mb-6 text-center">How It Works</h2>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-lg p-6">
