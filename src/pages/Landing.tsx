@@ -18,6 +18,7 @@ import { BackgroundPaths } from "@/components/BackgroundPaths";
 import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { CardSpotlight } from "@/components/ui/card-spotlight";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -350,7 +351,7 @@ export default function Landing() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.7 + index * 0.1 }}
             >
-              <Card className="border border-border p-6 h-full hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+              <CardSpotlight className="h-full">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-primary font-semibold text-sm">
@@ -358,15 +359,15 @@ export default function Landing() {
                     </span>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                    <p className="text-xs text-muted-foreground">{testimonial.company}</p>
+                    <h4 className="font-semibold text-white">{testimonial.name}</h4>
+                    <p className="text-sm text-neutral-400">{testimonial.role}</p>
+                    <p className="text-xs text-neutral-500">{testimonial.company}</p>
                   </div>
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-neutral-300 text-sm leading-relaxed">
                   "{testimonial.content}"
                 </p>
-              </Card>
+              </CardSpotlight>
             </motion.div>
           ))}
         </div>
