@@ -179,7 +179,6 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 pt-32 pb-20 max-w-6xl relative">
-        <LightRays count={10} color="rgba(160, 210, 255, 0.3)" blur={40} speed={12} length="80vh" />
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
