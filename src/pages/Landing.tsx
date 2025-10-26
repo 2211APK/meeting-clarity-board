@@ -186,14 +186,16 @@ export default function Landing() {
           transition={{ delay: 0.2 }}
           className="text-center mb-16"
         >
-          <HoverBorderGradient
-            as="div"
-            containerClassName="mb-8"
-            className="flex items-center gap-2 text-sm font-medium"
-          >
-            <Sparkles className="h-4 w-4" />
-            <span>Transform Your Meeting Notes</span>
-          </HoverBorderGradient>
+          <div className="flex justify-center">
+            <HoverBorderGradient
+              as="div"
+              containerClassName="mb-8"
+              className="flex items-center gap-2 text-sm font-medium"
+            >
+              <Sparkles className="h-4 w-4 text-yellow-400" />
+              <span>Transform Your Notes</span>
+            </HoverBorderGradient>
+          </div>
           
           <TextScramble
             as="h1"
