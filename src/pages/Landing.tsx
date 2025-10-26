@@ -17,6 +17,7 @@ import { Modal, ModalTrigger, ModalBody, ModalContent, ModalFooter } from "@/com
 import { BackgroundPaths } from "@/components/BackgroundPaths";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { TextLoop } from "@/components/ui/text-loop";
+import { TextScramble } from "@/components/ui/text-scramble";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -190,13 +191,23 @@ export default function Landing() {
             <span className="text-foreground text-sm font-medium">Transform Your Meeting Notes</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-semibold text-foreground mb-6 tracking-tight -mt-4">
+          <TextScramble
+            as="h1"
+            className="text-5xl md:text-7xl font-semibold text-foreground mb-6 tracking-tight -mt-4"
+            duration={1.2}
+            speed={0.04}
+          >
             Turn Chaos Into
-            <br />
-            <span className="text-primary">
-              Crystal Clear Action
-            </span>
-          </h1>
+          </TextScramble>
+          
+          <TextScramble
+            as="span"
+            className="text-5xl md:text-7xl font-semibold text-primary tracking-tight block"
+            duration={1.2}
+            speed={0.04}
+          >
+            Crystal Clear Action
+          </TextScramble>
 
           <div className="flex gap-4 justify-center flex-wrap mb-12">
             <LiquidButton
