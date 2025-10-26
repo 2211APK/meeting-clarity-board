@@ -178,7 +178,7 @@ export default function Landing() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 pt-32 pb-20 max-w-6xl relative">
+      <section className="container mx-auto px-4 pt-40 pb-20 max-w-6xl relative">
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
