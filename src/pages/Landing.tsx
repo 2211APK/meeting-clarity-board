@@ -341,6 +341,24 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* Feature Showcase with StickyScroll */}
+      <section id="features" className="container mx-auto px-4 max-w-6xl mb-20">
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl font-bold text-foreground mb-4">
+            Everything You Need
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Powerful features to transform your meeting notes
+          </p>
+        </motion.div>
+        <StickyScroll content={featureContent} />
+      </section>
+
       {/* Scroll Transition Container */}
       <section className="container mx-auto px-4 max-w-6xl">
         <ContainerScroll
@@ -363,24 +381,6 @@ export default function Landing() {
 
       {/* Logos Section */}
       <Logos heading="Trusted by teams everywhere" />
-
-      {/* Feature Showcase with StickyScroll */}
-      <section id="features" className="container mx-auto px-4 max-w-6xl mb-20">
-        <motion.div
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-bold text-foreground mb-4">
-            Everything You Need
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Powerful features to transform your meeting notes
-          </p>
-        </motion.div>
-        <StickyScroll content={featureContent} />
-      </section>
 
       {/* Timeline Section */}
       <section id="timeline" className="container mx-auto px-4 max-w-6xl mb-20">
