@@ -208,7 +208,7 @@ export default function Landing() {
             Crystal Clear Action
           </TextScramble>
 
-          <div className="flex gap-4 justify-center flex-wrap mb-12">
+          <div className="flex gap-4 justify-center flex-wrap mb-12 mt-8">
             <LiquidButton
               onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
               className="text-lg"
