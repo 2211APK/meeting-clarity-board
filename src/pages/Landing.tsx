@@ -18,7 +18,7 @@ import { BackgroundPaths } from "@/components/BackgroundPaths";
 import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { CardSpotlight } from "@/components/ui/card-spotlight";
+import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -92,6 +92,65 @@ export default function Landing() {
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
             Started the journey to transform how teams handle meeting notes
           </p>
+        </div>
+      ),
+    },
+  ];
+
+  const featureContent = [
+    {
+      title: "Smart Extraction",
+      description:
+        "Our AI-powered system automatically identifies and categorizes key information from your meeting notes. Decisions, action items, and questions are extracted instantly, saving you hours of manual work.",
+      content: (
+        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] text-white">
+          <img
+            src="https://images.unsplash.com/photo-1551434678-e076c223a692?w=500&h=500&fit=crop"
+            alt="Smart extraction demo"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      ),
+    },
+    {
+      title: "Visual Organization",
+      description:
+        "See your meeting outcomes organized in a beautiful, intuitive board layout. Drag and drop cards between categories, rearrange priorities, and get a clear overview of what matters most.",
+      content: (
+        <div className="flex h-full w-full items-center justify-center text-white">
+          <img
+            src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500&h=500&fit=crop"
+            alt="Visual organization demo"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      ),
+    },
+    {
+      title: "Instant Export",
+      description:
+        "Generate formatted summaries with one click. Export your organized notes to share with your team, keeping everyone aligned on decisions, actions, and open questions.",
+      content: (
+        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] text-white">
+          <img
+            src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=500&fit=crop"
+            alt="Export demo"
+            className="h-full w-full object-cover"
+          />
+        </div>
+      ),
+    },
+    {
+      title: "Real-time Collaboration",
+      description:
+        "Work together seamlessly with your team. Changes sync instantly, ensuring everyone stays on the same page. No more confusion about who's working on what or which version is current.",
+      content: (
+        <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] text-white">
+          <img
+            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=500&fit=crop"
+            alt="Collaboration demo"
+            className="h-full w-full object-cover"
+          />
         </div>
       ),
     },
@@ -305,72 +364,22 @@ export default function Landing() {
       {/* Logos Section */}
       <Logos heading="Trusted by teams everywhere" />
 
-      {/* Testimonials Section */}
-      <section className="container mx-auto px-4 max-w-6xl mb-20">
+      {/* Feature Showcase with StickyScroll */}
+      <section id="features" className="container mx-auto px-4 max-w-6xl mb-20">
         <motion.div
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.5 }}
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold text-foreground mb-4">
-            Loved by People Everywhere
+            Everything You Need
           </h2>
           <p className="text-muted-foreground text-lg">
-            See what our users have to say about ClearPoint
+            Powerful features to transform your meeting notes
           </p>
         </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            {
-              name: "Sarah Chen",
-              role: "Product Manager",
-              company: "TechCorp",
-              content: "ClearPoint has transformed how we handle meeting notes. What used to take 30 minutes now takes 5. The automatic categorization is incredibly accurate!",
-              avatar: "SC"
-            },
-            {
-              name: "Michael Rodriguez",
-              role: "Engineering Lead",
-              company: "StartupXYZ",
-              content: "The drag-and-drop interface makes organizing action items effortless. Our team's productivity has increased significantly since we started using ClearPoint.",
-              avatar: "MR"
-            },
-            {
-              name: "Emily Watson",
-              role: "Project Coordinator",
-              company: "Global Solutions",
-              content: "I love how ClearPoint separates decisions, actions, and questions. It's exactly what we needed to keep our meetings focused and actionable.",
-              avatar: "EW"
-            }
-          ].map((testimonial, index) => (
-            <motion.div
-              key={testimonial.name}
-              initial={{ y: 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.7 + index * 0.1 }}
-            >
-              <CardSpotlight className="h-full">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-primary font-semibold text-sm">
-                      {testimonial.avatar}
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-white">{testimonial.name}</h4>
-                    <p className="text-sm text-neutral-400">{testimonial.role}</p>
-                    <p className="text-xs text-neutral-500">{testimonial.company}</p>
-                  </div>
-                </div>
-                <p className="text-neutral-300 text-sm leading-relaxed">
-                  "{testimonial.content}"
-                </p>
-              </CardSpotlight>
-            </motion.div>
-          ))}
-        </div>
+        <StickyScroll content={featureContent} />
       </section>
 
       {/* Timeline Section */}
