@@ -1,4 +1,5 @@
 import { motion, useInView } from "framer-motion";
+import { LightRays } from "@/components/ui/light-rays";
 import { Button, LiquidButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router";
@@ -176,7 +177,8 @@ export default function Landing() {
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 pt-32 pb-20 max-w-6xl">
+      <section className="container mx-auto px-4 pt-32 pb-20 max-w-6xl relative">
+        <LightRays count={10} color="rgba(160, 210, 255, 0.3)" blur={40} speed={12} length="80vh" />
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -188,7 +190,7 @@ export default function Landing() {
             <span className="text-foreground text-sm font-medium">Transform Your Meeting Notes</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-semibold text-foreground mb-6 tracking-tight -mt-4">
             Turn Chaos Into
             <br />
             <span className="text-primary">
