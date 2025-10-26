@@ -332,7 +332,7 @@ export default function Landing() {
         <div className="mx-auto max-w-3xl lg:max-w-5xl px-6">
           <div className="relative">
             <div className="relative z-10 grid grid-cols-6 gap-3">
-              <Card className="relative col-span-full flex overflow-hidden lg:col-span-2">
+              <Card className="relative col-span-full flex overflow-hidden sm:col-span-3 lg:col-span-2">
                 <div className="relative m-auto size-fit pt-6">
                   <div className="relative flex h-24 w-56 items-center">
                     <svg className="text-muted absolute inset-0 size-full" viewBox="0 0 254 104" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -398,43 +398,14 @@ export default function Landing() {
                 </div>
               </Card>
               
-              <Card className="relative col-span-full overflow-hidden lg:col-span-3">
-                <div className="grid pt-6 sm:grid-cols-2">
-                  <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6 px-6">
-                    <div className="relative flex aspect-square size-12 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
-                      <Users className="m-auto size-6" strokeWidth={1} />
-                    </div>
-                    <div className="space-y-2">
-                      <h2 className="text-3xl font-semibold text-zinc-800 transition dark:text-white">Team Collaboration</h2>
-                      <p className="text-muted-foreground">Share organized notes with your team instantly. Keep everyone aligned on decisions and action items.</p>
-                    </div>
+              <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2">
+                <div className="pt-6">
+                  <div className="relative mx-auto flex aspect-square size-32 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
+                    <Users className="m-auto size-16" strokeWidth={1} />
                   </div>
-                  <div className="relative -mb-6 -mr-6 mt-6 h-fit border-l border-t p-6 py-6 sm:ml-6 rounded-tl-lg">
-                    <div className="absolute left-3 top-2 flex gap-1">
-                      <span className="block size-2 rounded-full border dark:border-white/10 dark:bg-white/10"></span>
-                      <span className="block size-2 rounded-full border dark:border-white/10 dark:bg-white/10"></span>
-                      <span className="block size-2 rounded-full border dark:border-white/10 dark:bg-white/10"></span>
-                    </div>
-                    <div className="relative flex h-full flex-col justify-center space-y-6 py-6">
-                      <div className="relative flex w-[calc(50%+0.875rem)] items-center justify-end gap-2">
-                        <span className="block h-fit rounded border px-2 py-1 text-xs shadow-sm">Sarah M.</span>
-                        <div className="ring-background size-7 ring-4">
-                          <img className="size-full rounded-full" src="https://avatars.githubusercontent.com/u/102558960?v=4" alt="Team member" />
-                        </div>
-                      </div>
-                      <div className="relative ml-[calc(50%-1rem)] flex items-center gap-2">
-                        <div className="ring-background size-8 ring-4">
-                          <img className="size-full rounded-full" src="https://avatars.githubusercontent.com/u/47919550?v=4" alt="Team member" />
-                        </div>
-                        <span className="block h-fit rounded border px-2 py-1 text-xs shadow-sm">Mike T.</span>
-                      </div>
-                      <div className="relative flex w-[calc(50%+0.875rem)] items-center justify-end gap-2">
-                        <span className="block h-fit rounded border px-2 py-1 text-xs shadow-sm">Jessica L.</span>
-                        <div className="ring-background size-7 ring-4">
-                          <img className="size-full rounded-full" src="https://avatars.githubusercontent.com/u/31113941?v=4" alt="Team member" />
-                        </div>
-                      </div>
-                    </div>
+                  <div className="relative z-10 mt-6 space-y-2 text-center px-6">
+                    <h2 className="text-3xl font-semibold transition dark:text-white">Team Collaboration</h2>
+                    <p className="text-muted-foreground">Share organized notes with your team instantly. Keep everyone aligned on decisions and action items.</p>
                   </div>
                 </div>
               </Card>
