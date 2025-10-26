@@ -282,6 +282,160 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* Features Bento Grid */}
+      <section id="features" className="container mx-auto px-4 py-20 max-w-6xl">
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl font-bold text-foreground mb-4">
+            Everything You Need
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Powerful features to transform your meeting notes
+          </p>
+        </motion.div>
+
+        <ul className="grid grid-cols-1 grid-rows-none gap-4 md:grid-cols-12 md:grid-rows-3 lg:gap-4 xl:max-h-[34rem] xl:grid-rows-2">
+          <li className="min-h-[14rem] list-none md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]">
+            <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
+                <div className="relative flex flex-1 flex-col justify-between gap-3">
+                  <div className="w-fit rounded-lg border border-border p-2">
+                    <Brain className="h-4 w-4 text-foreground" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="font-sans text-xl/[1.375rem] font-semibold text-foreground md:text-2xl/[1.875rem]">
+                      Smart Extraction
+                    </h3>
+                    <p className="font-sans text-sm/[1.125rem] text-muted-foreground md:text-base/[1.375rem]">
+                      Automatically categorize your notes into decisions, actions, and questions using intelligent pattern recognition.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li className="min-h-[14rem] list-none md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]">
+            <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
+                <div className="relative flex flex-1 flex-col justify-between gap-3">
+                  <div className="w-fit rounded-lg border border-border p-2">
+                    <Layout className="h-4 w-4 text-foreground" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="font-sans text-xl/[1.375rem] font-semibold text-foreground md:text-2xl/[1.875rem]">
+                      Drag & Drop Organization
+                    </h3>
+                    <p className="font-sans text-sm/[1.125rem] text-muted-foreground md:text-base/[1.375rem]">
+                      Easily reorganize cards between categories with intuitive drag-and-drop functionality.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li className="min-h-[14rem] list-none md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]">
+            <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
+                <div className="relative flex flex-1 flex-col justify-between gap-3">
+                  <div className="w-fit rounded-lg border border-border p-2">
+                    <Zap className="h-4 w-4 text-foreground" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="font-sans text-xl/[1.375rem] font-semibold text-foreground md:text-2xl/[1.875rem]">
+                      Instant Export
+                    </h3>
+                    <p className="font-sans text-sm/[1.125rem] text-muted-foreground md:text-base/[1.375rem]">
+                      Export your organized notes as formatted summaries with one click. Perfect for sharing with your team.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li className="min-h-[14rem] list-none md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]">
+            <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
+                <div className="relative flex flex-1 flex-col justify-between gap-3">
+                  <div className="w-fit rounded-lg border border-border p-2">
+                    <Sparkles className="h-4 w-4 text-foreground" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="font-sans text-xl/[1.375rem] font-semibold text-foreground md:text-2xl/[1.875rem]">
+                      Real-time Processing
+                    </h3>
+                    <p className="font-sans text-sm/[1.125rem] text-muted-foreground md:text-base/[1.375rem]">
+                      See your notes transform instantly as you type. No waiting, no delays.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li className="min-h-[14rem] list-none md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]">
+            <div className="relative h-full rounded-2xl border p-2 md:rounded-3xl md:p-3">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="border-0.75 relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl p-6 md:p-6 dark:shadow-[0px_0px_27px_0px_#2D2D2D]">
+                <div className="relative flex flex-1 flex-col justify-between gap-3">
+                  <div className="w-fit rounded-lg border border-border p-2">
+                    <ArrowRight className="h-4 w-4 text-foreground" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="font-sans text-xl/[1.375rem] font-semibold text-foreground md:text-2xl/[1.875rem]">
+                      Clean Interface
+                    </h3>
+                    <p className="font-sans text-sm/[1.125rem] text-muted-foreground md:text-base/[1.375rem]">
+                      Beautiful, distraction-free design that helps you focus on what matters most.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
       {/* Scroll Transition Container */}
       <section className="container mx-auto px-4 max-w-6xl">
         <ContainerScroll
