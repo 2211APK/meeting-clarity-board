@@ -186,7 +186,12 @@ export default function Landing() {
           transition={{ delay: 0.2 }}
           className="text-center mb-16"
         >
-          <div className="flex justify-center">
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="flex justify-center"
+          >
             <HoverBorderGradient
               as="div"
               containerClassName="mb-8"
@@ -195,27 +200,38 @@ export default function Landing() {
               <Sparkles className="h-4 w-4 text-yellow-400" />
               <span>Transform Your Notes</span>
             </HoverBorderGradient>
-          </div>
+          </motion.div>
           
-          <TextScramble
-            as="h1"
-            className="text-5xl md:text-7xl font-semibold text-foreground mb-6 tracking-tight -mt-8"
-            duration={1.2}
-            speed={0.04}
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.15 }}
           >
-            Turn Chaos Into
-          </TextScramble>
-          
-          <TextScramble
-            as="span"
-            className="text-5xl md:text-7xl font-semibold text-primary tracking-tight block"
-            duration={1.2}
-            speed={0.04}
-          >
-            Crystal Clear Action
-          </TextScramble>
+            <TextScramble
+              as="h1"
+              className="text-5xl md:text-7xl font-semibold text-foreground mb-6 tracking-tight -mt-8"
+              duration={1.2}
+              speed={0.04}
+            >
+              Turn Chaos Into
+            </TextScramble>
+            
+            <TextScramble
+              as="span"
+              className="text-5xl md:text-7xl font-semibold text-primary tracking-tight block"
+              duration={1.2}
+              speed={0.04}
+            >
+              Crystal Clear Action
+            </TextScramble>
+          </motion.div>
 
-          <div className="flex gap-4 justify-center flex-wrap mb-12 mt-8">
+          <motion.div
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.25 }}
+            className="flex gap-4 justify-center flex-wrap mb-12 mt-8"
+          >
             <LiquidButton
               onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
               className="text-lg"
@@ -223,10 +239,15 @@ export default function Landing() {
               <Sparkles className="mr-2 h-5 w-5 inline" />
               {isAuthenticated ? "Go to Dashboard" : "Start Organizing"}
             </LiquidButton>
-          </div>
+          </motion.div>
 
           {/* Feature Cards - Directly Under Buttons */}
-          <div className="flex justify-center mt-20">
+          <motion.div
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.35 }}
+            className="flex justify-center mt-20"
+          >
             <div className="scale-125">
               <DisplayCards
                 cards={[
@@ -257,7 +278,7 @@ export default function Landing() {
                 ]}
               />
             </div>
-          </div>
+          </motion.div>
         </motion.div>
       </section>
 
