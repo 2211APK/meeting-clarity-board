@@ -328,7 +328,7 @@ export default function Landing() {
       </section>
 
       {/* Feature Showcase with StickyScroll */}
-      <section id="features" className="container mx-auto px-4 max-w-6xl mb-20">
+      <section id="features" className="container mx-auto px-4 max-w-6xl mb-20 mt-32">
         <motion.div
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -364,9 +364,6 @@ export default function Landing() {
           </div>
         </ContainerScroll>
       </section>
-
-      {/* Logos Section */}
-      <Logos heading="Trusted by teams everywhere" />
 
       {/* Timeline Section */}
       <section id="timeline" className="container mx-auto px-4 max-w-6xl mb-20">
