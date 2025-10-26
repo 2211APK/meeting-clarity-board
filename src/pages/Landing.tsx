@@ -15,6 +15,7 @@ import { Timeline } from "@/components/Timeline";
 import { Modal, ModalTrigger, ModalBody, ModalContent, ModalFooter } from "@/components/ui/modal";
 import { BackgroundPaths } from "@/components/BackgroundPaths";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -174,6 +175,9 @@ export default function Landing() {
         </div>
       </motion.nav>
 
+      {/* Scroll Progress Bar */}
+      <ScrollProgress className="top-[65px]" />
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 pt-32 pb-20 max-w-6xl">
         <motion.div
@@ -246,25 +250,9 @@ export default function Landing() {
         <ContainerScroll
           titleComponent={
             <div className="h-20 flex items-center justify-center">
-              <VaporizeTextCycle
-                texts={["Bringing Efficiency To You"]}
-                font={{
-                  fontFamily: "Inter, sans-serif",
-                  fontSize: "48px",
-                  fontWeight: 700
-                }}
-                color={theme === "dark" ? "rgb(255, 255, 255)" : "hsl(var(--foreground))"}
-                spread={5}
-                density={5}
-                animation={{
-                  vaporizeDuration: 2,
-                  fadeInDuration: 1,
-                  waitDuration: 0.5
-                }}
-                direction="left-to-right"
-                alignment="center"
-                tag={Tag.H2}
-              />
+              <h2 className="text-5xl font-bold text-foreground">
+                Bringing Efficiency To You
+              </h2>
             </div>
           }
         >
