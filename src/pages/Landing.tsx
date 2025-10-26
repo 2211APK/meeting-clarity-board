@@ -18,6 +18,7 @@ import { BackgroundPaths } from "@/components/BackgroundPaths";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -185,10 +186,14 @@ export default function Landing() {
           transition={{ delay: 0.2 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 bg-muted border border-border rounded-full px-4 py-2 mb-8">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-foreground text-sm font-medium">Transform Your Meeting Notes</span>
-          </div>
+          <HoverBorderGradient
+            as="div"
+            containerClassName="mb-8"
+            className="flex items-center gap-2 text-sm font-medium"
+          >
+            <Sparkles className="h-4 w-4" />
+            <span>Transform Your Meeting Notes</span>
+          </HoverBorderGradient>
           
           <TextScramble
             as="h1"
