@@ -19,7 +19,6 @@ import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
-import { CardSpotlight } from "@/components/ui/card-spotlight";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -469,22 +468,20 @@ export default function Landing() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <CardSpotlight className="h-full">
-              <div className="relative z-20">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                    <span className="text-xl">👤</span>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-white">Sarah Johnson</h4>
-                    <p className="text-sm text-gray-400">Product Manager</p>
-                  </div>
+            <Card className="h-full p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-xl">👤</span>
                 </div>
-                <p className="text-gray-300 leading-relaxed">
-                  "ClearPoint has transformed how our team handles meeting notes. What used to take hours now takes minutes!"
-                </p>
+                <div>
+                  <h4 className="font-semibold text-foreground">Sarah Johnson</h4>
+                  <p className="text-sm text-muted-foreground">Product Manager</p>
+                </div>
               </div>
-            </CardSpotlight>
+              <p className="text-foreground leading-relaxed">
+                "ClearPoint has transformed how our team handles meeting notes. What used to take hours now takes minutes!"
+              </p>
+            </Card>
           </motion.div>
 
           <motion.div
@@ -492,22 +489,20 @@ export default function Landing() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <CardSpotlight className="h-full">
-              <div className="relative z-20">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                    <span className="text-xl">👤</span>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-white">Michael Chen</h4>
-                    <p className="text-sm text-gray-400">Engineering Lead</p>
-                  </div>
+            <Card className="h-full p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-xl">👤</span>
                 </div>
-                <p className="text-gray-300 leading-relaxed">
-                  "The smart extraction feature is incredible. It catches action items I would have missed manually."
-                </p>
+                <div>
+                  <h4 className="font-semibold text-foreground">Michael Chen</h4>
+                  <p className="text-sm text-muted-foreground">Engineering Lead</p>
+                </div>
               </div>
-            </CardSpotlight>
+              <p className="text-foreground leading-relaxed">
+                "The smart extraction feature is incredible. It catches action items I would have missed manually."
+              </p>
+            </Card>
           </motion.div>
 
           <motion.div
@@ -515,22 +510,20 @@ export default function Landing() {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.7 }}
           >
-            <CardSpotlight className="h-full">
-              <div className="relative z-20">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                    <span className="text-xl">👤</span>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-white">Emily Rodriguez</h4>
-                    <p className="text-sm text-gray-400">Team Lead</p>
-                  </div>
+            <Card className="h-full p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  <span className="text-xl">👤</span>
                 </div>
-                <p className="text-gray-300 leading-relaxed">
-                  "Finally, a tool that makes meeting follow-ups actually happen. Our team accountability has improved dramatically."
-                </p>
+                <div>
+                  <h4 className="font-semibold text-foreground">Emily Rodriguez</h4>
+                  <p className="text-sm text-muted-foreground">Team Lead</p>
+                </div>
               </div>
-            </CardSpotlight>
+              <p className="text-foreground leading-relaxed">
+                "Finally, a tool that makes meeting follow-ups actually happen. Our team accountability has improved dramatically."
+              </p>
+            </Card>
           </motion.div>
         </div>
       </section>
