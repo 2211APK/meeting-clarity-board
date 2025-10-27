@@ -442,8 +442,8 @@ export default function Landing() {
                 </div>
               </Card>
               
-              <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2">
-                <div className="pt-6">
+              <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2 lg:row-span-2">
+                <div className="pt-6 h-full flex flex-col justify-center">
                   <div className="relative mx-auto flex aspect-square size-32 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
                     <Brain className="m-auto size-16" strokeWidth={1} />
                   </div>
