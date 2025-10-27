@@ -234,7 +234,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       {/* Top Dock Navigation */}
-      <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50">
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
         <Dock magnification={60} distance={100} className="pointer-events-auto">
           <DockItem>
             <DockLabel>Home</DockLabel>
