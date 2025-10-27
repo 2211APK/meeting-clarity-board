@@ -465,10 +465,19 @@ export default function Landing() {
         <div className="grid md:grid-cols-3 gap-6">
           <motion.div
             initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            whileHover={{ 
+              scale: 1.05, 
+              rotateY: 5,
+              rotateX: 5,
+              z: 50,
+              transition: { duration: 0.3 }
+            }}
+            style={{ transformStyle: "preserve-3d" }}
           >
-            <Card className="h-full p-6">
+            <Card className="h-full p-6 transition-shadow duration-300 hover:shadow-2xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                   <span className="text-xl">👤</span>
@@ -486,10 +495,19 @@ export default function Landing() {
 
           <motion.div
             initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            whileHover={{ 
+              scale: 1.05, 
+              rotateY: 5,
+              rotateX: 5,
+              z: 50,
+              transition: { duration: 0.3 }
+            }}
+            style={{ transformStyle: "preserve-3d" }}
           >
-            <Card className="h-full p-6">
+            <Card className="h-full p-6 transition-shadow duration-300 hover:shadow-2xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                   <span className="text-xl">👤</span>
@@ -507,10 +525,19 @@ export default function Landing() {
 
           <motion.div
             initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            whileHover={{ 
+              scale: 1.05, 
+              rotateY: 5,
+              rotateX: 5,
+              z: 50,
+              transition: { duration: 0.3 }
+            }}
+            style={{ transformStyle: "preserve-3d" }}
           >
-            <Card className="h-full p-6">
+            <Card className="h-full p-6 transition-shadow duration-300 hover:shadow-2xl">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                   <span className="text-xl">👤</span>
