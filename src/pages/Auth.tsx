@@ -27,10 +27,13 @@ interface AuthProps {
   redirectAfterAuth?: string;
 }
 
+type AuthStep = "signIn" | "signUp" | { email: string };
+
 function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const { isLoading: authLoading, isAuthenticated, signIn } = useAuth();
   const navigate = useNavigate();
-  const [step, setStep] = useState<"signIn" | { email: string }>("signIn");
+  const [step, setStep] = useState<AuthStep>("signIn");
+  const [authMode, setAuthMode] = useState<"password" | "otp">("password");
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +41,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(false);
 
   // For 3D card effect
   const mouseX = useMotionValue(0);
@@ -63,6 +65,58 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       navigate(redirect);
     }
   }, [authLoading, isAuthenticated, navigate, redirectAfterAuth]);
+
+  const triggerConfetti = () => {
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+    
+    const randomInRange = (min: number, max: number) =>
+      Math.random() * (max - min) + min;
+
+    const interval = window.setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      });
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      });
+    }, 250);
+  };
+
+  const handlePasswordAuth = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    try {
+      const formData = new FormData(event.currentTarget);
+      formData.append("flow", step === "signUp" ? "signUp" : "signIn");
+      await signIn("password", formData);
+      
+      triggerConfetti();
+      const redirect = redirectAfterAuth || "/";
+      navigate(redirect);
+    } catch (error) {
+      console.error("Password auth error:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : step === "signUp" 
+            ? "Failed to create account. Please try again."
+            : "Invalid email or password. Please try again.",
+      );
+      setIsLoading(false);
+    }
+  };
 
   const handleEmailSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -92,32 +146,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       const formData = new FormData(event.currentTarget);
       await signIn("email-otp", formData);
 
-      // Trigger confetti on successful login
-      const duration = 3 * 1000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
-      
-      const randomInRange = (min: number, max: number) =>
-        Math.random() * (max - min) + min;
-
-      const interval = window.setInterval(() => {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) {
-          return clearInterval(interval);
-        }
-        const particleCount = 50 * (timeLeft / duration);
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-        });
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-        });
-      }, 250);
-
+      triggerConfetti();
       const redirect = redirectAfterAuth || "/";
       navigate(redirect);
     } catch (error) {
@@ -134,32 +163,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     try {
       await signIn("anonymous");
       
-      // Trigger confetti on successful guest login
-      const duration = 3 * 1000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
-      
-      const randomInRange = (min: number, max: number) =>
-        Math.random() * (max - min) + min;
-
-      const interval = window.setInterval(() => {
-        const timeLeft = animationEnd - Date.now();
-        if (timeLeft <= 0) {
-          return clearInterval(interval);
-        }
-        const particleCount = 50 * (timeLeft / duration);
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-        });
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-        });
-      }, 250);
-
+      triggerConfetti();
       const redirect = redirectAfterAuth || "/";
       navigate(redirect);
     } catch (error) {
@@ -412,7 +416,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 }}
               />
 
-              {step === "signIn" ? (
+              {typeof step === "string" && step !== "signUp" ? (
                 <>
                   {/* Logo and header */}
                   <div className="text-center space-y-1 mb-5">
@@ -444,8 +448,403 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     </motion.p>
                   </div>
 
-                  {/* Login form */}
-                  <form onSubmit={handleEmailSubmit} className="space-y-4">
+                  {/* Auth Mode Toggle */}
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode("password")}
+                      className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                        authMode === "password"
+                          ? "bg-white/10 text-white border border-white/20"
+                          : "text-white/60 hover:text-white/80"
+                      }`}
+                    >
+                      Password
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAuthMode("otp")}
+                      className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
+                        authMode === "otp"
+                          ? "bg-white/10 text-white border border-white/20"
+                          : "text-white/60 hover:text-white/80"
+                      }`}
+                    >
+                      Email Code
+                    </button>
+                  </div>
+
+                  {authMode === "password" ? (
+                    <form onSubmit={handlePasswordAuth} className="space-y-4">
+                      <motion.div className="space-y-3">
+                        {/* Email input */}
+                        <motion.div
+                          className={`relative ${focusedInput === "email" ? 'z-10' : ''}`}
+                          whileFocus={{ scale: 1.02 }}
+                          whileHover={{ scale: 1.01 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        >
+                          <div className="absolute -inset-[0.5px] bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                          
+                          <div className="relative flex items-center overflow-hidden rounded-lg">
+                            <Mail className={`absolute left-3 w-4 h-4 transition-all duration-300 ${
+                              focusedInput === "email" ? 'text-white' : 'text-white/40'
+                            }`} />
+                            
+                            <Input
+                              type="email"
+                              name="email"
+                              placeholder="Email address"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              onFocus={() => setFocusedInput("email")}
+                              onBlur={() => setFocusedInput(null)}
+                              className="w-full bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 h-10 transition-all duration-300 pl-10 pr-3 focus:bg-white/10"
+                              disabled={isLoading}
+                              required
+                            />
+                            
+                            {focusedInput === "email" && (
+                              <motion.div 
+                                layoutId="input-highlight"
+                                className="absolute inset-0 bg-white/5 -z-10"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                              />
+                            )}
+                          </div>
+                        </motion.div>
+
+                        {/* Password input */}
+                        <motion.div
+                          className={`relative ${focusedInput === "password" ? 'z-10' : ''}`}
+                          whileFocus={{ scale: 1.02 }}
+                          whileHover={{ scale: 1.01 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        >
+                          <div className="absolute -inset-[0.5px] bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                          
+                          <div className="relative flex items-center overflow-hidden rounded-lg">
+                            <Lock className={`absolute left-3 w-4 h-4 transition-all duration-300 ${
+                              focusedInput === "password" ? 'text-white' : 'text-white/40'
+                            }`} />
+                            
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              name="password"
+                              placeholder="Password"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              onFocus={() => setFocusedInput("password")}
+                              onBlur={() => setFocusedInput(null)}
+                              className="w-full bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 h-10 transition-all duration-300 pl-10 pr-10 focus:bg-white/10"
+                              disabled={isLoading}
+                              required
+                            />
+                            
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 text-white/40 hover:text-white transition-colors"
+                            >
+                              {showPassword ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </button>
+                            
+                            {focusedInput === "password" && (
+                              <motion.div 
+                                layoutId="input-highlight-password"
+                                className="absolute inset-0 bg-white/5 -z-10"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                              />
+                            )}
+                          </div>
+                        </motion.div>
+                      </motion.div>
+
+                      {error && (
+                        <p className="text-sm text-red-400">{error}</p>
+                      )}
+
+                      {/* Sign in button */}
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full relative group/button mt-5"
+                      >
+                        <div className="absolute inset-0 bg-white/10 rounded-lg blur-lg opacity-0 group-hover/button:opacity-70 transition-opacity duration-300" />
+                        
+                        <div className="relative overflow-hidden bg-white text-black font-medium h-10 rounded-lg transition-all duration-300 flex items-center justify-center">
+                          <motion.div 
+                            className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 -z-10"
+                            animate={{ x: ['-100%', '100%'] }}
+                            transition={{
+                              duration: 1.5,
+                              ease: "easeInOut",
+                              repeat: Infinity,
+                              repeatDelay: 1
+                            }}
+                            style={{
+                              opacity: isLoading ? 1 : 0,
+                              transition: 'opacity 0.3s ease'
+                            }}
+                          />
+                          
+                          <AnimatePresence mode="wait">
+                            {isLoading ? (
+                              <motion.div
+                                key="loading"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                              >
+                                <Loader />
+                              </motion.div>
+                            ) : (
+                              <motion.span
+                                key="button-text"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="flex items-center justify-center gap-1 text-sm font-medium"
+                              >
+                                Sign In
+                                <ArrowRight className="w-3 h-3 group-hover/button:translate-x-1 transition-transform duration-300" />
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </motion.button>
+
+                      {/* Toggle to sign up */}
+                      <div className="text-center">
+                        <button
+                          type="button"
+                          onClick={() => setStep("signUp")}
+                          className="text-xs text-white/60 hover:text-white transition-colors"
+                        >
+                          Don't have an account? <span className="underline">Sign up</span>
+                        </button>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="relative mt-2 mb-5 flex items-center">
+                        <div className="flex-grow border-t border-white/5"></div>
+                        <motion.span 
+                          className="mx-3 text-xs text-white/40"
+                          initial={{ opacity: 0.7 }}
+                          animate={{ opacity: [0.7, 0.9, 0.7] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          or
+                        </motion.span>
+                        <div className="flex-grow border-t border-white/5"></div>
+                      </div>
+
+                      {/* Guest Sign In */}
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="button"
+                        onClick={handleGuestLogin}
+                        disabled={isLoading}
+                        className="w-full relative group/guest"
+                      >
+                        <div className="absolute inset-0 bg-white/5 rounded-lg blur opacity-0 group-hover/guest:opacity-70 transition-opacity duration-300" />
+                        
+                        <div className="relative overflow-hidden bg-white/5 text-white font-medium h-10 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-2">
+                          <UserX className="w-4 h-4 text-white/80 group-hover/guest:text-white transition-colors duration-300" />
+                          
+                          <span className="text-white/80 group-hover/guest:text-white transition-colors text-xs">
+                            Continue as Guest
+                          </span>
+                          
+                          <motion.div 
+                            className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0"
+                            initial={{ x: '-100%' }}
+                            whileHover={{ x: '100%' }}
+                            transition={{
+                              duration: 1,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        </div>
+                      </motion.button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleEmailSubmit} className="space-y-4">
+                      <motion.div className="space-y-3">
+                        {/* Email input for OTP */}
+                        <motion.div
+                          className={`relative ${focusedInput === "email" ? 'z-10' : ''}`}
+                          whileFocus={{ scale: 1.02 }}
+                          whileHover={{ scale: 1.01 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        >
+                          <div className="absolute -inset-[0.5px] bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                          
+                          <div className="relative flex items-center overflow-hidden rounded-lg">
+                            <Mail className={`absolute left-3 w-4 h-4 transition-all duration-300 ${
+                              focusedInput === "email" ? 'text-white' : 'text-white/40'
+                            }`} />
+                            
+                            <Input
+                              type="email"
+                              name="email"
+                              placeholder="Email address"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              onFocus={() => setFocusedInput("email")}
+                              onBlur={() => setFocusedInput(null)}
+                              className="w-full bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 h-10 transition-all duration-300 pl-10 pr-3 focus:bg-white/10"
+                              disabled={isLoading}
+                              required
+                            />
+                            
+                            {focusedInput === "email" && (
+                              <motion.div 
+                                layoutId="input-highlight"
+                                className="absolute inset-0 bg-white/5 -z-10"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                              />
+                            )}
+                          </div>
+                        </motion.div>
+                      </motion.div>
+
+                      {error && (
+                        <p className="text-sm text-red-400">{error}</p>
+                      )}
+
+                      {/* Send code button */}
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full relative group/button mt-5"
+                      >
+                        <div className="absolute inset-0 bg-white/10 rounded-lg blur-lg opacity-0 group-hover/button:opacity-70 transition-opacity duration-300" />
+                        
+                        <div className="relative overflow-hidden bg-white text-black font-medium h-10 rounded-lg transition-all duration-300 flex items-center justify-center">
+                          <AnimatePresence mode="wait">
+                            {isLoading ? (
+                              <motion.div
+                                key="loading"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                              >
+                                <Loader />
+                              </motion.div>
+                            ) : (
+                              <motion.span
+                                key="button-text"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="flex items-center justify-center gap-1 text-sm font-medium"
+                              >
+                                Send Code
+                                <ArrowRight className="w-3 h-3 group-hover/button:translate-x-1 transition-transform duration-300" />
+                              </motion.span>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </motion.button>
+
+                      {/* Divider */}
+                      <div className="relative mt-2 mb-5 flex items-center">
+                        <div className="flex-grow border-t border-white/5"></div>
+                        <motion.span 
+                          className="mx-3 text-xs text-white/40"
+                          initial={{ opacity: 0.7 }}
+                          animate={{ opacity: [0.7, 0.9, 0.7] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          or
+                        </motion.span>
+                        <div className="flex-grow border-t border-white/5"></div>
+                      </div>
+
+                      {/* Guest Sign In */}
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="button"
+                        onClick={handleGuestLogin}
+                        disabled={isLoading}
+                        className="w-full relative group/guest"
+                      >
+                        <div className="absolute inset-0 bg-white/5 rounded-lg blur opacity-0 group-hover/guest:opacity-70 transition-opacity duration-300" />
+                        
+                        <div className="relative overflow-hidden bg-white/5 text-white font-medium h-10 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-2">
+                          <UserX className="w-4 h-4 text-white/80 group-hover/guest:text-white transition-colors duration-300" />
+                          
+                          <span className="text-white/80 group-hover/guest:text-white transition-colors text-xs">
+                            Continue as Guest
+                          </span>
+                          
+                          <motion.div 
+                            className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0"
+                            initial={{ x: '-100%' }}
+                            whileHover={{ x: '100%' }}
+                            transition={{
+                              duration: 1,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        </div>
+                      </motion.button>
+                    </form>
+                  )}
+                </>
+              ) : step === "signUp" ? (
+                <>
+                  {/* Sign Up Form */}
+                  <div className="text-center space-y-1 mb-5">
+                    <motion.div
+                      initial={{ scale: 0.5, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", duration: 0.8 }}
+                      className="mx-auto w-10 h-10 rounded-full border border-white/10 flex items-center justify-center relative overflow-hidden cursor-pointer"
+                      onClick={() => navigate("/")}
+                    >
+                      <img src="./logo.svg" alt="Logo" className="w-6 h-6" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
+                    </motion.div>
+                    <motion.h1
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/80"
+                    >
+                      Create Account
+                    </motion.h1>
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className="text-white/60 text-xs"
+                    >
+                      Sign up to get started with ClearPoint
+                    </motion.p>
+                  </div>
+
+                  <form onSubmit={handlePasswordAuth} className="space-y-4">
                     <motion.div className="space-y-3">
                       {/* Email input */}
                       <motion.div
@@ -486,13 +885,65 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                           )}
                         </div>
                       </motion.div>
+
+                      {/* Password input */}
+                      <motion.div
+                        className={`relative ${focusedInput === "password" ? 'z-10' : ''}`}
+                        whileFocus={{ scale: 1.02 }}
+                        whileHover={{ scale: 1.01 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                      >
+                        <div className="absolute -inset-[0.5px] bg-gradient-to-r from-white/10 via-white/5 to-white/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                        
+                        <div className="relative flex items-center overflow-hidden rounded-lg">
+                          <Lock className={`absolute left-3 w-4 h-4 transition-all duration-300 ${
+                            focusedInput === "password" ? 'text-white' : 'text-white/40'
+                          }`} />
+                          
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onFocus={() => setFocusedInput("password")}
+                            onBlur={() => setFocusedInput(null)}
+                            className="w-full bg-white/5 border-transparent focus:border-white/20 text-white placeholder:text-white/30 h-10 transition-all duration-300 pl-10 pr-10 focus:bg-white/10"
+                            disabled={isLoading}
+                            required
+                          />
+                          
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 text-white/40 hover:text-white transition-colors"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
+                          </button>
+                          
+                          {focusedInput === "password" && (
+                            <motion.div 
+                              layoutId="input-highlight-password"
+                              className="absolute inset-0 bg-white/5 -z-10"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                            />
+                          )}
+                        </div>
+                      </motion.div>
                     </motion.div>
 
                     {error && (
                       <p className="text-sm text-red-400">{error}</p>
                     )}
 
-                    {/* Sign in button */}
+                    {/* Sign up button */}
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -503,21 +954,6 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       <div className="absolute inset-0 bg-white/10 rounded-lg blur-lg opacity-0 group-hover/button:opacity-70 transition-opacity duration-300" />
                       
                       <div className="relative overflow-hidden bg-white text-black font-medium h-10 rounded-lg transition-all duration-300 flex items-center justify-center">
-                        <motion.div 
-                          className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 -z-10"
-                          animate={{ x: ['-100%', '100%'] }}
-                          transition={{
-                            duration: 1.5,
-                            ease: "easeInOut",
-                            repeat: Infinity,
-                            repeatDelay: 1
-                          }}
-                          style={{
-                            opacity: isLoading ? 1 : 0,
-                            transition: 'opacity 0.3s ease'
-                          }}
-                        />
-                        
                         <AnimatePresence mode="wait">
                           {isLoading ? (
                             <motion.div
@@ -536,7 +972,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                               exit={{ opacity: 0 }}
                               className="flex items-center justify-center gap-1 text-sm font-medium"
                             >
-                              Sign In
+                              Create Account
                               <ArrowRight className="w-3 h-3 group-hover/button:translate-x-1 transition-transform duration-300" />
                             </motion.span>
                           )}
@@ -544,49 +980,16 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       </div>
                     </motion.button>
 
-                    {/* Divider */}
-                    <div className="relative mt-2 mb-5 flex items-center">
-                      <div className="flex-grow border-t border-white/5"></div>
-                      <motion.span 
-                        className="mx-3 text-xs text-white/40"
-                        initial={{ opacity: 0.7 }}
-                        animate={{ opacity: [0.7, 0.9, 0.7] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    {/* Toggle to sign in */}
+                    <div className="text-center">
+                      <button
+                        type="button"
+                        onClick={() => setStep("signIn")}
+                        className="text-xs text-white/60 hover:text-white transition-colors"
                       >
-                        or
-                      </motion.span>
-                      <div className="flex-grow border-t border-white/5"></div>
+                        Already have an account? <span className="underline">Sign in</span>
+                      </button>
                     </div>
-
-                    {/* Guest Sign In */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      type="button"
-                      onClick={handleGuestLogin}
-                      disabled={isLoading}
-                      className="w-full relative group/guest"
-                    >
-                      <div className="absolute inset-0 bg-white/5 rounded-lg blur opacity-0 group-hover/guest:opacity-70 transition-opacity duration-300" />
-                      
-                      <div className="relative overflow-hidden bg-white/5 text-white font-medium h-10 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-2">
-                        <UserX className="w-4 h-4 text-white/80 group-hover/guest:text-white transition-colors duration-300" />
-                        
-                        <span className="text-white/80 group-hover/guest:text-white transition-colors text-xs">
-                          Continue as Guest
-                        </span>
-                        
-                        <motion.div 
-                          className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0"
-                          initial={{ x: '-100%' }}
-                          whileHover={{ x: '100%' }}
-                          transition={{
-                            duration: 1,
-                            ease: "easeInOut"
-                          }}
-                        />
-                      </div>
-                    </motion.button>
                   </form>
                 </>
               ) : (
