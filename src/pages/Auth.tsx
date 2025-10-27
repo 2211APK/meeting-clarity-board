@@ -113,18 +113,13 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   }, [authLoading, isAuthenticated, navigate, redirectAfterAuth]);
 
   return (
-    <div className="min-h-screen w-screen relative overflow-hidden flex items-center justify-center bg-card">
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0 z-0">
-        <GradientBackground />
-      </div>
-      
+    <div className="min-h-screen w-screen relative overflow-hidden flex items-center justify-center bg-background">
       {/* Content */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative z-10 w-full px-4"
+        className="w-full px-4"
       >
         <AuthForm redirectAfterAuth={redirectAfterAuth} />
       </motion.div>
