@@ -19,6 +19,7 @@ import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import { CardSpotlight } from "@/components/ui/card-spotlight";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -443,6 +444,94 @@ export default function Landing() {
               </Card>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="container mx-auto px-4 py-20 max-w-6xl">
+        <motion.div
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl font-bold text-foreground mb-4">
+            What Our Users Say
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Join thousands of teams organizing their meetings better
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          <motion.div
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <CardSpotlight className="h-full">
+              <div className="relative z-20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-xl">👤</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">Sarah Johnson</h4>
+                    <p className="text-sm text-gray-400">Product Manager</p>
+                  </div>
+                </div>
+                <p className="text-gray-300 leading-relaxed">
+                  "ClearPoint has transformed how our team handles meeting notes. What used to take hours now takes minutes!"
+                </p>
+              </div>
+            </CardSpotlight>
+          </motion.div>
+
+          <motion.div
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <CardSpotlight className="h-full">
+              <div className="relative z-20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-xl">👤</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">Michael Chen</h4>
+                    <p className="text-sm text-gray-400">Engineering Lead</p>
+                  </div>
+                </div>
+                <p className="text-gray-300 leading-relaxed">
+                  "The smart extraction feature is incredible. It catches action items I would have missed manually."
+                </p>
+              </div>
+            </CardSpotlight>
+          </motion.div>
+
+          <motion.div
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.7 }}
+          >
+            <CardSpotlight className="h-full">
+              <div className="relative z-20">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                    <span className="text-xl">👤</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">Emily Rodriguez</h4>
+                    <p className="text-sm text-gray-400">Team Lead</p>
+                  </div>
+                </div>
+                <p className="text-gray-300 leading-relaxed">
+                  "Finally, a tool that makes meeting follow-ups actually happen. Our team accountability has improved dramatically."
+                </p>
+              </div>
+            </CardSpotlight>
+          </motion.div>
         </div>
       </section>
 
