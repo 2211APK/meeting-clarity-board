@@ -51,12 +51,12 @@ export function AuthForm({ redirectAfterAuth }: AuthFormProps) {
     setError(null);
     try {
       await signIn(provider);
-      triggerConfetti();
-      const redirect = redirectAfterAuth || "/";
-      navigate(redirect);
+      // Only trigger confetti after successful sign-in
+      // The auth state will change and redirect will happen via useEffect in Auth.tsx
     } catch (error) {
       console.error(`${provider} sign-in error:`, error);
       setError(`Failed to sign in with ${provider}. Please try again.`);
+    } finally {
       setIsLoading(false);
     }
   };
