@@ -364,7 +364,7 @@ export default function Landing() {
         <div className="mx-auto max-w-3xl lg:max-w-5xl px-6">
           <div className="relative">
             <div className="relative z-10 grid grid-cols-6 gap-3">
-              <Card className="relative col-span-full flex overflow-hidden sm:col-span-3 lg:col-span-2">
+              <Card className="relative col-span-full flex overflow-hidden sm:col-span-3 lg:col-span-2 lg:row-span-1">
                 <div className="relative m-auto size-fit pt-6">
                   <div className="relative flex h-24 w-56 items-center">
                     <svg className="text-muted absolute inset-0 size-full" viewBox="0 0 254 104" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -430,14 +430,26 @@ export default function Landing() {
                 </div>
               </Card>
               
-              <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2">
-                <div className="pt-6">
+              <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2 lg:row-span-2">
+                <div className="pt-6 h-full flex flex-col justify-center">
                   <div className="relative mx-auto flex aspect-square size-32 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
                     <Users className="m-auto size-16" strokeWidth={1} />
                   </div>
                   <div className="relative z-10 mt-6 space-y-2 text-center px-6">
                     <h2 className="text-3xl font-semibold transition dark:text-white">Team Collaboration</h2>
                     <p className="text-muted-foreground">Share organized notes with your team instantly. Keep everyone aligned on decisions and action items.</p>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2">
+                <div className="pt-6">
+                  <div className="relative mx-auto flex aspect-square size-32 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
+                    <Brain className="m-auto size-16" strokeWidth={1} />
+                  </div>
+                  <div className="relative z-10 mt-6 space-y-2 text-center px-6">
+                    <h2 className="text-3xl font-semibold transition dark:text-white">AI-Powered</h2>
+                    <p className="text-muted-foreground">Intelligent extraction algorithms that learn from your meeting patterns to improve accuracy over time.</p>
                   </div>
                 </div>
               </Card>
