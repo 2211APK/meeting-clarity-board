@@ -54,29 +54,17 @@ export default function Landing() {
 
   const timelineData = [
     {
-      title: "2024",
+      title: "30 October 2025",
       content: (
         <div>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8">
-            Launched ClearPoint to help teams organize meeting notes efficiently
+            Started working on ClearPoint to help teams organise meeting notes efficiently
           </p>
-          <div className="grid grid-cols-2 gap-4">
-            <img
-              src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&h=500&fit=crop"
-              alt="startup"
-              className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow"
-            />
-            <img
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=500&fit=crop"
-              alt="team meeting"
-              className="rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow"
-            />
-          </div>
         </div>
       ),
     },
     {
-      title: "Early 2024",
+      title: "25 October 2025",
       content: (
         <div>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
