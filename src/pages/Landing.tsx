@@ -257,18 +257,20 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 pt-40 pb-20 max-w-6xl relative">
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-16"
-        >
           <motion.div
             initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.1, duration: 0.8, ease: "easeOut" }}
-            className="flex justify-center"
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+            className="text-center mb-16"
           >
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: 0.1, duration: 0.8, ease: "easeOut" }}
+              className="flex justify-center"
+            >
             <HoverBorderGradient
               as="div"
               containerClassName="mb-8"
@@ -281,7 +283,8 @@ export default function Landing() {
           
           <motion.div
             initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 0.15, duration: 0.8, ease: "easeOut" }}
           >
             <TextScramble
@@ -305,7 +308,8 @@ export default function Landing() {
 
           <motion.div
             initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 0.25, duration: 0.8, ease: "easeOut" }}
             className="flex gap-4 justify-center flex-wrap mb-12 mt-8"
           >
@@ -321,7 +325,8 @@ export default function Landing() {
           {/* Feature Cards - Directly Under Buttons */}
           <motion.div
             initial={{ y: 60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 0.35, duration: 0.9, ease: "easeOut" }}
             className="flex justify-center mt-20"
           >
