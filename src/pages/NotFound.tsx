@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { Home, AlertCircle } from "lucide-react";
 import {
@@ -10,6 +9,7 @@ import {
   EmptyDescription,
   EmptyContent,
 } from "@/components/ui/empty";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 
 export default function NotFound() {
   const navigate = useNavigate();
@@ -34,22 +34,13 @@ export default function NotFound() {
         </EmptyHeader>
         <EmptyContent>
           <div className="flex gap-3 flex-wrap justify-center">
-            <Button
-              variant="outline"
-              size="lg"
+            <RainbowButton
               onClick={() => navigate("/")}
               className="gap-2"
             >
               <Home className="h-4 w-4" />
               Get back to home page
-            </Button>
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => window.history.back()}
-            >
-              Go Back
-            </Button>
+            </RainbowButton>
           </div>
         </EmptyContent>
       </Empty>
