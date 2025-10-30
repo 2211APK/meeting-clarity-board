@@ -258,15 +258,15 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 pt-40 pb-20 max-w-6xl relative">
         <motion.div
-          initial={{ y: 30, opacity: 0 }}
+          initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
           className="text-center mb-16"
         >
           <motion.div
-            initial={{ y: 30, opacity: 0 }}
+            initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.1, duration: 0.8, ease: "easeOut" }}
             className="flex justify-center"
           >
             <HoverBorderGradient
@@ -280,9 +280,9 @@ export default function Landing() {
           </motion.div>
           
           <motion.div
-            initial={{ y: 30, opacity: 0 }}
+            initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.15 }}
+            transition={{ delay: 0.15, duration: 0.8, ease: "easeOut" }}
           >
             <TextScramble
               as="h1"
@@ -304,9 +304,9 @@ export default function Landing() {
           </motion.div>
 
           <motion.div
-            initial={{ y: 30, opacity: 0 }}
+            initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.25 }}
+            transition={{ delay: 0.25, duration: 0.8, ease: "easeOut" }}
             className="flex gap-4 justify-center flex-wrap mb-12 mt-8"
           >
             <LiquidButton
@@ -320,9 +320,9 @@ export default function Landing() {
 
           {/* Feature Cards - Directly Under Buttons */}
           <motion.div
-            initial={{ y: 40, opacity: 0 }}
+            initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.35 }}
+            transition={{ delay: 0.35, duration: 0.9, ease: "easeOut" }}
             className="flex justify-center mt-20"
           >
             <div className="scale-125">
@@ -461,9 +461,10 @@ export default function Landing() {
       {/* Testimonials Section */}
       <section className="container mx-auto px-4 py-20 max-w-6xl">
         <motion.div
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold text-foreground mb-4">
@@ -570,9 +571,10 @@ export default function Landing() {
       {/* Feature Showcase with StickyScroll */}
       <section className="container mx-auto px-4 max-w-6xl mb-20 mt-32">
         <motion.div
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold text-foreground mb-4">
@@ -613,9 +615,10 @@ export default function Landing() {
       {/* How It Works Section */}
       <section id="how-it-works" className="container mx-auto px-4 max-w-6xl mb-20 mt-32">
         <motion.div
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <h2 className="text-3xl font-bold text-foreground mb-6 text-center">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-4">
