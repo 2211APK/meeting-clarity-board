@@ -330,24 +330,23 @@ useEffect(() => {
                 <AnimatePresence mode="wait">
                     {authStep === "email" && <motion.div key="email-content" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center gap-4">
                         <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl md:text-6xl tracking-tight text-foreground whitespace-nowrap">Get started with Us</p></div></BlurFade>
-                        <BlurFade delay={0.25 * 2}><p className="text-sm font-medium text-muted-foreground">Continue with</p></BlurFade>
-                        <BlurFade delay={0.25 * 3}><div className="flex items-center justify-center gap-4 w-full">
+                        <BlurFade delay={0.25 * 2}><div className="flex items-center justify-center gap-4 w-full">
                             <button 
                                 onClick={() => void signIn("google")}
-                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
+                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-1.5 backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
                             >
                                 <GoogleIcon />
                                 <span className="font-semibold text-foreground">Google</span>
                             </button>
                             <button 
                                 onClick={() => void signIn("github")}
-                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
+                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-1.5 backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
                             >
                                 <GitHubIcon />
                                 <span className="font-semibold text-foreground">GitHub</span>
                             </button>
                         </div></BlurFade>
-                        <BlurFade delay={0.25 * 4} className="w-[300px]"><div className="flex items-center w-full gap-2 py-2"><hr className="w-full border-border"/><span className="text-xs font-semibold text-muted-foreground">OR</span><hr className="w-full border-border"/></div></BlurFade>
+                        <BlurFade delay={0.25 * 3} className="w-[300px]"><div className="flex items-center w-full gap-2 py-2"><hr className="w-full border-border"/><span className="text-xs font-semibold text-muted-foreground">OR</span><hr className="w-full border-border"/></div></BlurFade>
                     </motion.div>}
                     {authStep === "password" && <motion.div key="password-title" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center text-center gap-4">
                         <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">Create your password</p></div></BlurFade>
@@ -362,7 +361,7 @@ useEffect(() => {
                 <form onSubmit={handleFinalSubmit} className="w-[300px] space-y-6">
                      <AnimatePresence>
                         {authStep !== 'confirmPassword' && <motion.div key="email-password-fields" exit={{ opacity: 0, filter: 'blur(4px)' }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full space-y-6">
-                            <BlurFade delay={authStep === 'email' ? 0.25 * 5 : 0} inView={true} className="w-full">
+                            <BlurFade delay={authStep === 'email' ? 0.25 * 4 : 0} inView={true} className="w-full">
                                 <div className="relative w-full">
                                     <AnimatePresence>
                                         {authStep === "password" && <motion.div initial={{ y: -10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.3, delay: 0.4 }} className="absolute -top-6 left-4 z-10"><label className="text-xs text-muted-foreground font-semibold">Email</label></motion.div>}
