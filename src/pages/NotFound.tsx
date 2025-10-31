@@ -1,34 +1,9 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeftIcon } from "lucide-react";
-import { Button } from "../components/ui/button";
-
-// 🎞️ Animation Variants
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" } },
-};
-
-const globeVariants = {
-  hidden: { scale: 0.85, opacity: 0, y: 10 },
-  visible: {
-    scale: 1,
-    opacity: 1,
-    y: 0,
-    transition: { duration: 1, ease: "easeOut" },
-  },
-  floating: {
-    y: [-4, 4],
-    transition: {
-      duration: 5,
-      ease: "easeInOut",
-      repeat: Infinity,
-      repeatType: "reverse" as const,
-    },
-  },
-};
-
+import { Globe } from "@/components/ui/cosmic-404";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
 
 export interface NotFoundProps {
   title?: string;
@@ -38,70 +13,77 @@ export interface NotFoundProps {
 }
 
 export default function NotFound({
-  title = "Oops! Lost in space",
-  description = "We couldn't find the page you're looking for. It might have been moved or deleted.",
-  backText = "Return to earth",
+  title = "404",
+  description = "Oops! Looks like you're lost in space. The page you're looking for doesn't exist.",
+  backText = "Return Home",
   onBack,
 }: NotFoundProps) {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
-    <div className="flex flex-col justify-center items-center px-4 h-[88vh] bg-background">
-      <AnimatePresence mode="wait">
+    <div className="flex flex-col justify-center items-center px-4 min-h-screen bg-background relative overflow-hidden">
+      {/* Cosmic background effect */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 flex flex-col items-center gap-8 max-w-2xl mx-auto text-center"
+      >
+        {/* Globe */}
         <motion.div
-          className="text-center"
-          initial="hidden"
-          animate="visible"
-          exit="hidden"
-          variants={fadeUp}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="w-64 h-64 md:w-80 md:h-80"
         >
-       
-          <div className="flex items-center justify-center gap-6 mb-10">
-            <motion.span
-              className="text-7xl md:text-8xl font-bold text-foreground/80 select-none"
-              variants={fadeUp}
-            >
-              4
-            </motion.span>
-
-            <motion.div
-              className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center"
-              variants={globeVariants}
-              animate={["visible", "floating"]}
-            >
-              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/30" />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.08)_0%,transparent_70%)]" />
-            </motion.div>
-
-            <motion.span
-              className="text-7xl md:text-8xl font-bold text-foreground/80 select-none"
-              variants={fadeUp}
-            >
-              4
-            </motion.span>
-          </div>
-
-        
-          <motion.h1
-            className="mb-4 text-3xl md:text-5xl font-semibold tracking-tight text-foreground"
-            variants={fadeUp}
-          >
-            {title}
-          </motion.h1>
-
-          <motion.p
-            className="mx-auto mb-10 max-w-md text-base md:text-lg text-muted-foreground/70"
-            variants={fadeUp}
-          >
-            {description}
-          </motion.p>
-
-          <motion.div variants={fadeUp}>
-            <Button className="gap-2 hover:scale-105 transition-all duration-500 cursor-pointer">
-              <ArrowLeftIcon className="w-5 h-5" />
-              {backText}
-            </Button>
-          </motion.div>
+          <Globe className="w-full h-full" />
         </motion.div>
-      </AnimatePresence>
+
+        {/* Title */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="text-8xl md:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-primary/60"
+        >
+          {title}
+        </motion.h1>
+
+        {/* Description */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="text-lg md:text-xl text-muted-foreground max-w-md"
+        >
+          {description}
+        </motion.p>
+
+        {/* Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          <Button 
+            onClick={handleBack}
+            size="lg"
+            className="mt-4 gap-2 hover:scale-105 transition-all duration-300"
+          >
+            {backText}
+          </Button>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
