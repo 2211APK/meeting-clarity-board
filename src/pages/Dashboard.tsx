@@ -1,4 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -129,14 +131,25 @@ export default function Dashboard() {
     return extractedCards;
   };
 
-  const handleProcess = () => {
+  const extractMeetingNotes = useAction(api.ai.extractMeetingNotes);
+
+  const handleProcess = async () => {
     setProcessing(true);
-    setTimeout(() => {
+    try {
+      // Use AI-powered extraction via Convex action
+      const extracted = await extractMeetingNotes({ notes });
+      setCards(extracted);
+      toast.success(`Extracted ${extracted.length} items from your notes`);
+    } catch (error) {
+      console.error("Error processing notes:", error);
+      toast.error("Failed to process notes. Please try again.");
+      // Fallback to regex-based extraction
       const extracted = extractCards(notes);
       setCards(extracted);
+      toast.success(`Extracted ${extracted.length} items from your notes (fallback mode)`);
+    } finally {
       setProcessing(false);
-      toast.success(`Extracted ${extracted.length} items from your notes`);
-    }, 800);
+    }
   };
 
   const handleDragEnd = (result: DropResult) => {
