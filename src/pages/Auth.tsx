@@ -165,7 +165,7 @@ interface AuthComponentProps {
   redirectAfterAuth?: string;
 }
 
-const AuthComponent = ({ logo = <DefaultLogo />, brandName = "EaseMize", redirectAfterAuth = "/" }: AuthComponentProps) => {
+const AuthComponent = ({ logo = <DefaultLogo />, brandName = "ClearPoint", redirectAfterAuth = "/" }: AuthComponentProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -297,7 +297,6 @@ useEffect(() => {
         <Modal />
 
         <div className={cn( "fixed top-4 left-4 z-20 flex items-center gap-2", "md:left-1/2 md:-translate-x-1/2" )}>
-            {logo}
             <h1 className="text-base font-bold text-foreground">{brandName}</h1>
         </div>
 
