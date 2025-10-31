@@ -64,7 +64,7 @@ export default function Landing() {
       ),
     },
     {
-      title: "25 October 2025",
+      title: "31 October 2025",
       content: (
         <div>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
