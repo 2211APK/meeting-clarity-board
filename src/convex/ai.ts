@@ -1,6 +1,6 @@
 "use node";
 
-import { internalAction } from "./_generated/server";
+import { action } from "./_generated/server";
 import { v } from "convex/values";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -10,7 +10,7 @@ interface ExtractedCard {
   type: "decision" | "action" | "question";
 }
 
-export const extractMeetingNotes = internalAction({
+export const extractMeetingNotes = action({
   args: { notes: v.string() },
   handler: async (ctx, args): Promise<ExtractedCard[]> => {
     if (!OPENAI_API_KEY) {

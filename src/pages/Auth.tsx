@@ -6,6 +6,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { ArrowRight, Mail, Gem, Lock, Eye, EyeOff, ArrowLeft, X, AlertCircle, PartyPopper, Loader } from "lucide-react";
 // Importing animation components from framer-motion
 import { AnimatePresence, motion, useInView, Variants, Transition } from "framer-motion";
+import { useAuthActions } from "@convex-dev/auth/react";
+import { useNavigate } from "react-router";
 
 // --- CONFETTI LOGIC ---
 import type { ReactNode } from "react"
@@ -175,6 +177,8 @@ const AuthComponent = ({ logo = <DefaultLogo />, brandName = "ClearPoint", redir
   const [modalStatus, setModalStatus] = useState<'closed' | 'loading' | 'error' | 'success'>('closed');
   const [modalErrorMessage, setModalErrorMessage] = useState('');
   const confettiRef = useRef<ConfettiRef>(null);
+  const { signIn } = useAuthActions();
+  const navigate = useNavigate();
 
   const isEmailValid = /\S+@\S+\.\S+/.test(email);
   const isPasswordValid = password.length >= 6;
@@ -193,21 +197,34 @@ const AuthComponent = ({ logo = <DefaultLogo />, brandName = "ClearPoint", redir
     }
   };
 
-  const handleFinalSubmit = (e: React.FormEvent) => {
+  const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (modalStatus !== 'closed' || authStep !== 'confirmPassword') return;
 
     if (password !== confirmPassword) {
         setModalErrorMessage("Passwords do not match!");
         setModalStatus('error');
-    } else {
-        setModalStatus('loading');
+        return;
+    }
+
+    setModalStatus('loading');
+    
+    try {
+        await signIn("password", { email, password, flow: "signUp" });
+        
         const loadingStepsCount = modalSteps.length - 1;
         const totalDuration = loadingStepsCount * TEXT_LOOP_INTERVAL * 1000;
+        
         setTimeout(() => {
             fireSideCanons();
             setModalStatus('success');
+            setTimeout(() => {
+                navigate(redirectAfterAuth);
+            }, 2000);
         }, totalDuration);
+    } catch (error) {
+        setModalErrorMessage("Failed to create account. Please try again.");
+        setModalStatus('error');
     }
   };
 
@@ -301,15 +318,34 @@ useEffect(() => {
         </div>
 
         <div className={cn("flex w-full flex-1 h-full items-center justify-center bg-card", "relative overflow-hidden")}>
-            <div className="absolute inset-0 z-0"><GradientBackground /></div>
+            <div className="absolute inset-0 z-0">
+                <img 
+                    src="https://harmless-tapir-303.convex.cloud/api/storage/6f46d6c9-c6db-44b2-92cc-32a1f9932252" 
+                    alt="Background" 
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"></div>
+            </div>
             <fieldset disabled={modalStatus !== 'closed'} className="relative z-10 flex flex-col items-center gap-8 w-[280px] mx-auto p-4">
                 <AnimatePresence mode="wait">
                     {authStep === "email" && <motion.div key="email-content" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center gap-4">
                         <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl md:text-6xl tracking-tight text-foreground whitespace-nowrap">Get started with Us</p></div></BlurFade>
                         <BlurFade delay={0.25 * 2}><p className="text-sm font-medium text-muted-foreground">Continue with</p></BlurFade>
                         <BlurFade delay={0.25 * 3}><div className="flex items-center justify-center gap-4 w-full">
-                            <GlassButton contentClassName="flex items-center justify-center gap-2" size="sm"><GoogleIcon /><span className="font-semibold text-foreground">Google</span></GlassButton>
-                            <GlassButton contentClassName="flex items-center justify-center gap-2" size="sm"><GitHubIcon /><span className="font-semibold text-foreground">GitHub</span></GlassButton>
+                            <GlassButton 
+                                onClick={() => void signIn("google")} 
+                                contentClassName="flex items-center justify-center gap-2" 
+                                size="sm"
+                            >
+                                <GoogleIcon /><span className="font-semibold text-foreground">Google</span>
+                            </GlassButton>
+                            <GlassButton 
+                                onClick={() => void signIn("github")} 
+                                contentClassName="flex items-center justify-center gap-2" 
+                                size="sm"
+                            >
+                                <GitHubIcon /><span className="font-semibold text-foreground">GitHub</span>
+                            </GlassButton>
                         </div></BlurFade>
                         <BlurFade delay={0.25 * 4} className="w-[300px]"><div className="flex items-center w-full gap-2 py-2"><hr className="w-full border-border"/><span className="text-xs font-semibold text-muted-foreground">OR</span><hr className="w-full border-border"/></div></BlurFade>
                     </motion.div>}

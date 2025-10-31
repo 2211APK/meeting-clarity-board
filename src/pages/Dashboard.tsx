@@ -131,16 +131,17 @@ export default function Dashboard() {
     return extractedCards;
   };
 
+  const extractMeetingNotes = useAction(api.ai.extractMeetingNotes as any);
+
   const handleProcess = async () => {
     setProcessing(true);
     try {
-      // Use regex-based extraction
-      const extracted = extractCards(notes);
+      // Try AI-powered extraction first
+      const extracted = await extractMeetingNotes({ notes });
       setCards(extracted);
-      toast.success(`Extracted ${extracted.length} items from your notes`);
+      toast.success(`AI extracted ${extracted.length} items from your notes`);
     } catch (error) {
-      console.error("Error processing notes:", error);
-      toast.error("Failed to process notes. Please try again.");
+      console.error("Error processing notes with AI:", error);
       // Fallback to regex-based extraction
       const extracted = extractCards(notes);
       setCards(extracted);
