@@ -3,7 +3,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Globe } from "../components/ui/cosmic-404.tsx";
 
 // 🎞️ Animation Variants
 const fadeUp = {
@@ -25,7 +24,7 @@ const globeVariants = {
       duration: 5,
       ease: "easeInOut",
       repeat: Infinity,
-      repeatType: "reverse",
+      repeatType: "reverse" as const,
     },
   },
 };
@@ -40,7 +39,7 @@ export interface NotFoundProps {
 
 export default function NotFound({
   title = "Oops! Lost in space",
-  description = "We couldn’t find the page you’re looking for. It might have been moved or deleted.",
+  description = "We couldn't find the page you're looking for. It might have been moved or deleted.",
   backText = "Return to earth",
   onBack,
 }: NotFoundProps) {
@@ -64,11 +63,11 @@ export default function NotFound({
             </motion.span>
 
             <motion.div
-              className="relative w-24 h-24 md:w-32 md:h-32"
+              className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center"
               variants={globeVariants}
               animate={["visible", "floating"]}
             >
-              <Globe />
+              <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/30" />
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.08)_0%,transparent_70%)]" />
             </motion.div>
 

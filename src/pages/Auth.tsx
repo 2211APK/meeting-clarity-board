@@ -332,22 +332,20 @@ useEffect(() => {
                         <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl md:text-6xl tracking-tight text-foreground whitespace-nowrap">Get started with Us</p></div></BlurFade>
                         <BlurFade delay={0.25 * 2}><p className="text-sm font-medium text-muted-foreground">Continue with</p></BlurFade>
                         <BlurFade delay={0.25 * 3}><div className="flex items-center justify-center gap-4 w-full">
-                            <div className="glass-button-wrap cursor-pointer rounded-full relative" onClick={() => void signIn("google")}>
-                                <button className="glass-button relative z-10 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2">
-                                    <span className="glass-button-text relative block select-none tracking-tighter flex items-center gap-2">
-                                        <GoogleIcon /><span className="font-semibold text-foreground">Google</span>
-                                    </span>
-                                </button>
-                                <div className="glass-button-shadow rounded-full pointer-events-none"></div>
-                            </div>
-                            <div className="glass-button-wrap cursor-pointer rounded-full relative" onClick={() => void signIn("github")}>
-                                <button className="glass-button relative z-10 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2">
-                                    <span className="glass-button-text relative block select-none tracking-tighter flex items-center gap-2">
-                                        <GitHubIcon /><span className="font-semibold text-foreground">GitHub</span>
-                                    </span>
-                                </button>
-                                <div className="glass-button-shadow rounded-full pointer-events-none"></div>
-                            </div>
+                            <button 
+                                onClick={() => void signIn("google")}
+                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
+                            >
+                                <GoogleIcon />
+                                <span className="font-semibold text-foreground">Google</span>
+                            </button>
+                            <button 
+                                onClick={() => void signIn("github")}
+                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
+                            >
+                                <GitHubIcon />
+                                <span className="font-semibold text-foreground">GitHub</span>
+                            </button>
                         </div></BlurFade>
                         <BlurFade delay={0.25 * 4} className="w-[300px]"><div className="flex items-center w-full gap-2 py-2"><hr className="w-full border-border"/><span className="text-xs font-semibold text-muted-foreground">OR</span><hr className="w-full border-border"/></div></BlurFade>
                     </motion.div>}
