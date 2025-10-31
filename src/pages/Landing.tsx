@@ -74,11 +74,11 @@ export default function Landing() {
       ),
     },
     {
-      title: "Late 2023",
+      title: "Future plans",
       content: (
         <div>
           <p className="text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-4">
-            Started the journey to transform how teams handle meeting notes
+            Looking to add increased functions to improve efficiency for clients
           </p>
         </div>
       ),
