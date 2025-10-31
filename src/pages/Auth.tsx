@@ -78,7 +78,7 @@ export function TextLoop({ children, className, interval = 2, transition = { dur
 interface BlurFadeProps { children: React.ReactNode; className?: string; variant?: { hidden: { y: number }; visible: { y: number } }; duration?: number; delay?: number; yOffset?: number; inView?: boolean; inViewMargin?: string; blur?: string; }
 function BlurFade({ children, className, variant, duration = 0.4, delay = 0, yOffset = 6, inView = true, inViewMargin = "-50px", blur = "6px" }: BlurFadeProps) {
   const ref = useRef(null);
-  const inViewResult = useInView(ref, { once: true, margin: inViewMargin });
+  const inViewResult = useInView(ref, { once: true });
   const isInView = !inView || inViewResult;
   const defaultVariants: Variants = {
     hidden: { y: yOffset, opacity: 0, filter: `blur(${blur})` },
@@ -162,9 +162,10 @@ const DefaultLogo = () => ( <div className="bg-primary text-primary-foreground r
 interface AuthComponentProps {
   logo?: React.ReactNode;
   brandName?: string;
+  redirectAfterAuth?: string;
 }
 
-export const AuthComponent = ({ logo = <DefaultLogo />, brandName = "EaseMize" }: AuthComponentProps) => {
+const AuthComponent = ({ logo = <DefaultLogo />, brandName = "EaseMize", redirectAfterAuth = "/" }: AuthComponentProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -383,3 +384,5 @@ useEffect(() => {
     </div>
   );
 };
+
+export default AuthComponent;

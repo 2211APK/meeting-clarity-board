@@ -131,13 +131,11 @@ export default function Dashboard() {
     return extractedCards;
   };
 
-  const extractMeetingNotes = useAction(api.ai.extractMeetingNotes);
-
   const handleProcess = async () => {
     setProcessing(true);
     try {
-      // Use AI-powered extraction via Convex action
-      const extracted = await extractMeetingNotes({ notes });
+      // Use regex-based extraction
+      const extracted = extractCards(notes);
       setCards(extracted);
       toast.success(`Extracted ${extracted.length} items from your notes`);
     } catch (error) {
