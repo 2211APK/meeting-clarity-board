@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/use-auth";
-import { useAction } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,6 +55,10 @@ export default function Dashboard() {
   const [processing, setProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [noteTitle, setNoteTitle] = useState("");
+
+  const saveNote = useMutation(api.notes.saveNote);
+  const userNotes = useQuery(api.notes.getUserNotes);
 
   useEffect(() => {
     // Check for saved theme preference or default to light
@@ -132,6 +136,31 @@ export default function Dashboard() {
   };
 
   const extractMeetingNotes = useAction(api.ai.extractMeetingNotes as any);
+
+  const handleSaveNote = async () => {
+    if (!noteTitle.trim()) {
+      toast.error("Please enter a title for your note");
+      return;
+    }
+
+    if (cards.length === 0) {
+      toast.error("Please process some notes before saving");
+      return;
+    }
+
+    try {
+      await saveNote({
+        title: noteTitle,
+        content: notes,
+        cards: cards,
+      });
+      toast.success("Note saved successfully!");
+      setNoteTitle("");
+    } catch (error) {
+      toast.error("Failed to save note");
+      console.error(error);
+    }
+  };
 
   const handleProcess = async () => {
     setProcessing(true);
@@ -325,13 +354,20 @@ export default function Dashboard() {
               <Sparkles className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
             </div>
+            <input
+              type="text"
+              value={noteTitle}
+              onChange={(e) => setNoteTitle(e.target.value)}
+              placeholder="Note title (optional)"
+              className="w-full px-4 py-2 mb-3 rounded-lg border border-border bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Type Here..."
               className="min-h-[200px] resize-none"
             />
-            <div className="flex gap-3 mt-4">
+            <div className="flex gap-3 mt-4 flex-wrap">
               <HoverBorderGradient
                 as="button"
                 onClick={handleProcess}
@@ -352,22 +388,31 @@ export default function Dashboard() {
                 )}
               </HoverBorderGradient>
               {cards.length > 0 && (
-                <Button
-                  onClick={handleExport}
-                  variant="outline"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Summary
-                    </>
-                  )}
-                </Button>
+                <>
+                  <Button
+                    onClick={handleExport}
+                    variant="outline"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4 mr-2" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy Summary
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={handleSaveNote}
+                    variant="default"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Save Note
+                  </Button>
+                </>
               )}
             </div>
           </Card>

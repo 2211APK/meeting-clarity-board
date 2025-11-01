@@ -124,24 +124,11 @@ const GradientBackground = () => (
         <style>
             {` @keyframes float1 { 0% { transform: translate(0, 0); } 50% { transform: translate(-10px, 10px); } 100% { transform: translate(0, 0); } } @keyframes float2 { 0% { transform: translate(0, 0); } 50% { transform: translate(10px, -10px); } 100% { transform: translate(0, 0); } } `}
         </style>
-        <svg width="100%" height="100%" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" className="absolute top-0 left-0 w-full h-full">
-            <defs>
-                <linearGradient id="rev_grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style={{stopColor: 'var(--color-primary)', stopOpacity:0.8}} /><stop offset="100%" style={{stopColor: 'var(--color-chart-3)', stopOpacity:0.6}} /></linearGradient>
-                <linearGradient id="rev_grad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style={{stopColor: 'var(--color-chart-4)', stopOpacity:0.9}} /><stop offset="50%" style={{stopColor: 'var(--color-secondary)', stopOpacity:0.7}} /><stop offset="100%" style={{stopColor: 'var(--color-chart-1)', stopOpacity:0.6}} /></linearGradient>
-                <radialGradient id="rev_grad3" cx="50%" cy="50%" r="50%"><stop offset="0%" style={{stopColor: 'var(--color-destructive)', stopOpacity:0.8}} /><stop offset="100%" style={{stopColor: 'var(--color-chart-5)', stopOpacity:0.4}} /></radialGradient>
-                <filter id="rev_blur1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="35"/></filter>
-                <filter id="rev_blur2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="25"/></filter>
-                <filter id="rev_blur3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="45"/></filter>
-            </defs>
-            <g style={{ animation: 'float1 20s ease-in-out infinite' }}>
-                <ellipse cx="200" cy="500" rx="250" ry="180" fill="url(#rev_grad1)" filter="url(#rev_blur1)" transform="rotate(-30 200 500)"/>
-                <rect x="500" y="100" width="300" height="250" rx="80" fill="url(#rev_grad2)" filter="url(#rev_blur2)" transform="rotate(15 650 225)"/>
-            </g>
-            <g style={{ animation: 'float2 25s ease-in-out infinite' }}>
-                <circle cx="650" cy="450" r="150" fill="url(#rev_grad3)" filter="url(#rev_blur3)" opacity="0.7"/>
-                <ellipse cx="50" cy="150" rx="180" ry="120" fill="var(--color-accent)" filter="url(#rev_blur2)" opacity="0.8"/>
-            </g>
-        </svg>
+        <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse" style={{ animation: 'float1 20s ease-in-out infinite' }} />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse" style={{ animation: 'float2 25s ease-in-out infinite' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
+        </div>
     </>
 );
 
@@ -330,20 +317,20 @@ useEffect(() => {
                 <AnimatePresence mode="wait">
                     {authStep === "email" && <motion.div key="email-content" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center gap-4">
                         <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl md:text-6xl tracking-tight text-foreground whitespace-nowrap">Get started with Us</p></div></BlurFade>
-                        <BlurFade delay={0.25 * 2}><div className="flex items-center justify-center gap-4 w-full">
+                        <BlurFade delay={0.25 * 2}><div className="flex items-center justify-center gap-3 w-full">
                             <button 
                                 onClick={() => void signIn("google")}
-                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-1.5 backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
+                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/20"
                             >
                                 <GoogleIcon />
-                                <span className="font-semibold text-foreground">Google</span>
+                                <span className="text-sm font-semibold text-foreground">Google</span>
                             </button>
                             <button 
                                 onClick={() => void signIn("linkedin")}
-                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-5 py-1.5 backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-white/10"
+                                className="group relative inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 backdrop-blur-md bg-white/5 border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/20"
                             >
                                 <LinkedInIcon />
-                                <span className="font-semibold text-foreground">LinkedIn</span>
+                                <span className="text-sm font-semibold text-foreground">LinkedIn</span>
                             </button>
                         </div></BlurFade>
                         <BlurFade delay={0.25 * 3} className="w-[300px]"><div className="flex items-center w-full gap-2 py-2"><hr className="w-full border-border"/><span className="text-xs font-semibold text-muted-foreground">OR</span><hr className="w-full border-border"/></div></BlurFade>

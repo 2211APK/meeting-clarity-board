@@ -31,6 +31,20 @@ const schema = defineSchema(
 
       role: v.optional(roleValidator), // role of the user. do not remove
     }).index("email", ["email"]), // index for the email. do not remove or modify
+
+    // notes table for saving user meeting notes
+    notes: defineTable({
+      userId: v.id("users"),
+      title: v.string(),
+      content: v.string(),
+      cards: v.array(
+        v.object({
+          id: v.string(),
+          content: v.string(),
+          type: v.union(v.literal("decision"), v.literal("action"), v.literal("question")),
+        })
+      ),
+    }).index("by_userId", ["userId"]),
   },
   {
     schemaValidation: false,
