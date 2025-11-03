@@ -292,6 +292,16 @@ export default function Landing() {
             >
               Crystal Clear Action
             </TextScramble>
+            
+            <motion.p
+              initial={{ y: 50, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+              className="text-lg md:text-xl text-muted-foreground mt-6 max-w-2xl mx-auto"
+            >
+              Convert every meeting note into a shareable, actionable board in seconds.
+            </motion.p>
           </motion.div>
 
           <motion.div
