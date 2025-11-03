@@ -19,7 +19,6 @@ import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
-import { SparklesCore } from "@/components/ui/sparkles-core";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -29,12 +28,6 @@ export default function Landing() {
   const [isMobile, setIsMobile] = useState(false);
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, amount: 0.3 });
-
-  // Scroll-based fade for hero entrance - fades out immediately on scroll
-  const { scrollY } = useScroll();
-  const heroOpacity = useTransform(scrollY, [0, 100], [1, 0]);
-  const heroScale = useTransform(scrollY, [0, 100], [1, 0.8]);
-  const contentOpacity = useTransform(scrollY, [0, 150], [0, 1]);
 
   useEffect(() => {
     // Check for saved theme preference or default to light
@@ -171,34 +164,8 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
-      {/* Hero Entrance with Sparkles - Fades out on scroll */}
-      <motion.div
-        style={{ opacity: heroOpacity, scale: heroScale }}
-        className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-      >
-        <div className="absolute inset-0 bg-background">
-          <SparklesCore
-            id="nulsifySparkles"
-            background="transparent"
-            minSize={0.6}
-            maxSize={1.4}
-            particleDensity={100}
-            className="w-full h-full"
-            particleColor={theme === "dark" ? "#FFFFFF" : "#000000"}
-          />
-        </div>
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="relative z-10 text-8xl md:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-500 to-primary"
-        >
-          Nulsify
-        </motion.h1>
-      </motion.div>
-
-      {/* Main Content - Fades in as hero fades out */}
-      <motion.div style={{ opacity: contentOpacity }}>
+      {/* Main Content */}
+      <div>
         {/* Floating Navigation Bar */}
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
@@ -686,7 +653,7 @@ export default function Landing() {
           buttonText="Start Organizing"
           onButtonClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
         />
-      </motion.div>
+      </div>
     </div>
   );
 }
