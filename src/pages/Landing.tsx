@@ -30,11 +30,11 @@ export default function Landing() {
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, amount: 0.3 });
 
-  // Scroll-based fade for hero entrance
+  // Scroll-based fade for hero entrance - fades out immediately on scroll
   const { scrollY } = useScroll();
-  const heroOpacity = useTransform(scrollY, [0, 200], [1, 0]);
-  const heroScale = useTransform(scrollY, [0, 200], [1, 0.8]);
-  const contentOpacity = useTransform(scrollY, [100, 300], [0, 1]);
+  const heroOpacity = useTransform(scrollY, [0, 100], [1, 0]);
+  const heroScale = useTransform(scrollY, [0, 100], [1, 0.8]);
+  const contentOpacity = useTransform(scrollY, [0, 150], [0, 1]);
 
   useEffect(() => {
     // Check for saved theme preference or default to light
