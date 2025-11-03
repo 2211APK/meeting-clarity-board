@@ -252,7 +252,7 @@ export default function Landing() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
             <motion.div
               initial={{ y: 50, opacity: 0 }}
@@ -300,7 +300,7 @@ export default function Landing() {
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-              className="text-lg md:text-xl text-muted-foreground mt-6 max-w-2xl mx-auto"
+              className="text-lg md:text-xl text-muted-foreground mt-8 max-w-2xl mx-auto"
             >
               {["Convert", "every", "meeting", "note", "into", "a", "shareable,", "actionable", "board", "in", "seconds."].map((word, index) => (
                 <motion.span
@@ -323,7 +323,7 @@ export default function Landing() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 0.25, duration: 0.8, ease: "easeOut" }}
-            className="flex gap-4 justify-center flex-wrap mb-12 mt-8"
+            className="flex gap-4 justify-center flex-wrap mb-16 mt-10"
           >
             <LiquidButton
               onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}

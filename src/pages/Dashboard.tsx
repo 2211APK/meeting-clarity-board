@@ -318,7 +318,7 @@ export default function Dashboard() {
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="backdrop-blur-xl bg-card/50 border-b border-border sticky top-0 z-50"
+        className="backdrop-blur-xl bg-white/10 dark:bg-black/10 border-b border-white/20 dark:border-white/10 sticky top-0 z-50"
       >
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
@@ -349,7 +349,7 @@ export default function Dashboard() {
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <Card className="backdrop-blur-xl bg-card border-border p-6 shadow-lg">
+          <Card className="backdrop-blur-xl bg-white/10 dark:bg-black/10 border-white/20 dark:border-white/10 p-6 shadow-lg">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
@@ -359,7 +359,7 @@ export default function Dashboard() {
               value={noteTitle}
               onChange={(e) => setNoteTitle(e.target.value)}
               placeholder="Note title (optional)"
-              className="w-full px-4 py-2 mb-3 rounded-lg border border-border bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-2 mb-3 rounded-lg border border-white/20 dark:border-white/10 bg-white/5 dark:bg-black/5 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <Textarea
               value={notes}
@@ -433,7 +433,7 @@ export default function Dashboard() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2 + index * 0.1 }}
                   >
-                    <Card className={`backdrop-blur-xl ${config.bgClass} border p-4 shadow-xl min-h-[400px]`}>
+                    <Card className={`backdrop-blur-xl ${config.bgClass} bg-white/5 dark:bg-black/5 border border-white/20 dark:border-white/10 p-4 shadow-xl min-h-[400px]`}>
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-semibold text-foreground text-lg">
                           {config.title}
@@ -460,7 +460,7 @@ export default function Dashboard() {
                                       ref={provided.innerRef}
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
-                                      className={`${config.cardBg} backdrop-blur-sm border rounded-lg p-4 shadow-lg transition-all cursor-move ${
+                                      className={`${config.cardBg} backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/20 rounded-lg p-4 shadow-lg transition-all cursor-move ${
                                         snapshot.isDragging ? "shadow-2xl scale-105 rotate-2" : ""
                                       }`}
                                     >
@@ -493,7 +493,7 @@ export default function Dashboard() {
             animate={{ opacity: 1 }}
             className="text-center py-16"
           >
-            <Card className="backdrop-blur-xl bg-card border-border p-12 max-w-md mx-auto">
+            <Card className="backdrop-blur-xl bg-white/10 dark:bg-black/10 border-white/20 dark:border-white/10 p-12 max-w-md mx-auto">
               <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground text-lg">
                 Process your meeting notes to see them organized into cards
