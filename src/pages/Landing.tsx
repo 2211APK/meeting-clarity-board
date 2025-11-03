@@ -1,4 +1,4 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { LightRays } from "@/components/ui/light-rays";
 import { Button, LiquidButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,6 +19,7 @@ import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import { SparklesCore } from "@/components/ui/sparkles-core";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -28,6 +29,12 @@ export default function Landing() {
   const [isMobile, setIsMobile] = useState(false);
   const featuresRef = useRef(null);
   const isInView = useInView(featuresRef, { once: true, amount: 0.3 });
+
+  // Scroll-based fade for hero entrance
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const heroScale = useTransform(scrollY, [0, 400], [1, 0.8]);
+  const contentOpacity = useTransform(scrollY, [200, 500], [0, 1]);
 
   useEffect(() => {
     // Check for saved theme preference or default to light
@@ -164,87 +171,115 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
-      {/* Floating Navigation Bar */}
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl"
+      {/* Hero Entrance with Sparkles - Fades out on scroll */}
+      <motion.div
+        style={{ opacity: heroOpacity, scale: heroScale }}
+        className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
       >
-        <div className="backdrop-blur-lg bg-background/5 border border-border/20 rounded-full shadow-lg px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <span className="text-lg font-bold text-foreground">ClearPoint</span>
-          </div>
+        <div className="absolute inset-0 bg-background">
+          <SparklesCore
+            id="nulsifySparkles"
+            background="transparent"
+            minSize={0.6}
+            maxSize={1.4}
+            particleDensity={100}
+            className="w-full h-full"
+            particleColor={theme === "dark" ? "#FFFFFF" : "#000000"}
+          />
+        </div>
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="relative z-10 text-8xl md:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-500 to-primary"
+        >
+          Nulsify
+        </motion.h1>
+      </motion.div>
 
-          <div className="flex items-center">
-            <div className="flex items-center gap-2 bg-transparent py-0.5 px-0.5 rounded-full">
-              {[
-                { name: "Features", href: "#features", icon: Sparkles },
-                { name: "How It Works", href: "#how-it-works", icon: Layout },
-                { name: "Timeline", href: "#timeline", icon: Clock },
-                { name: "Get Started", href: "#get-started", icon: Zap },
-              ].map((item) => {
-                const Icon = item.icon;
-                const isActive = activeTab === item.name;
-                return (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    onClick={() => setActiveTab(item.name)}
-                    className={`relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors
-                      ${isActive ? "bg-muted text-primary" : "text-foreground/80 hover:text-primary"}`}
-                  >
-                    <span className="hidden md:inline">{item.name}</span>
-                    <span className="md:hidden inline-flex items-center">
-                      <Icon size={18} strokeWidth={2.5} />
-                    </span>
+      {/* Main Content - Fades in as hero fades out */}
+      <motion.div style={{ opacity: contentOpacity }}>
+        {/* Floating Navigation Bar */}
+        <motion.nav
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl"
+        >
+          <div className="backdrop-blur-lg bg-background/5 border border-border/20 rounded-full shadow-lg px-4 py-2 flex items-center justify-between">
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
+              <span className="text-lg font-bold text-foreground">Nulsify</span>
+            </div>
 
-                    {isActive && (
-                      <motion.div
-                        layoutId="lamp"
-                        className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      >
-                        <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
-                          <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
-                          <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
-                          <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
-                        </div>
-                      </motion.div>
-                    )}
-                  </a>
-                );
-              })}
+            <div className="flex items-center">
+              <div className="flex items-center gap-2 bg-transparent py-0.5 px-0.5 rounded-full">
+                {[
+                  { name: "Features", href: "#features", icon: Sparkles },
+                  { name: "How It Works", href: "#how-it-works", icon: Layout },
+                  { name: "Timeline", href: "#timeline", icon: Clock },
+                  { name: "Get Started", href: "#get-started", icon: Zap },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.name;
+                  return (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setActiveTab(item.name)}
+                      className={`relative cursor-pointer text-sm font-semibold px-6 py-2 rounded-full transition-colors
+                        ${isActive ? "bg-muted text-primary" : "text-foreground/80 hover:text-primary"}`}
+                    >
+                      <span className="hidden md:inline">{item.name}</span>
+                      <span className="md:hidden inline-flex items-center">
+                        <Icon size={18} strokeWidth={2.5} />
+                      </span>
+
+                      {isActive && (
+                        <motion.div
+                          layoutId="lamp"
+                          className="absolute inset-0 w-full bg-primary/5 rounded-full -z-10"
+                          initial={false}
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        >
+                          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-full">
+                            <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
+                            <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
+                            <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
+                          </div>
+                        </motion.div>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-full"
+              >
+                {theme === "light" ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+              </Button>
+              <ShimmerButton
+                onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                disabled={isLoading}
+                className="text-sm"
+              >
+                {isAuthenticated ? "Dashboard" : "Get Started"}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </ShimmerButton>
             </div>
           </div>
+        </motion.nav>
 
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-full"
-            >
-              {theme === "light" ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
-            </Button>
-            <ShimmerButton
-              onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-              disabled={isLoading}
-              className="text-sm"
-            >
-              {isAuthenticated ? "Dashboard" : "Get Started"}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </ShimmerButton>
-          </div>
-        </div>
-      </motion.nav>
-
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 pt-40 pb-20 max-w-6xl relative">
+        {/* Hero Section */}
+        <section className="container mx-auto px-4 pt-40 pb-20 max-w-6xl relative">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
@@ -644,13 +679,14 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Footer */}
-      <BackgroundPaths
-        title="ClearPoint"
-        subtitle="Join teams who are saving hours every week"
-        buttonText="Start Organizing"
-        onButtonClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
-      />
+        {/* Footer */}
+        <BackgroundPaths
+          title="ClearPoint"
+          subtitle="Join teams who are saving hours every week"
+          buttonText="Start Organizing"
+          onButtonClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+        />
+      </motion.div>
     </div>
   );
 }
