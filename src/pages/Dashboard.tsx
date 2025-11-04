@@ -275,7 +275,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       {/* Top Dock Navigation */}
-      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
         <Dock magnification={60} distance={100} className="pointer-events-auto">
           <DockItem>
             <DockLabel>Home</DockLabel>
@@ -318,7 +318,7 @@ export default function Dashboard() {
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="backdrop-blur-xl bg-white/10 dark:bg-black/10 border-b border-white/20 dark:border-white/10 sticky top-0 z-50"
+        className="backdrop-blur-xl bg-white/10 dark:bg-black/10 border-b border-white/20 dark:border-white/10 sticky top-0 z-40"
       >
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
@@ -350,8 +350,10 @@ export default function Dashboard() {
           className="mb-8 relative"
         >
           {/* Premium Gradient Background */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-blue-500/20 blur-2xl -z-10" />
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-cyan-500/10 via-violet-500/10 to-fuchsia-500/10 blur-xl -z-10 animate-pulse" />
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-blue-500/20 dark:from-purple-500/20 dark:via-pink-500/20 dark:to-blue-500/20 blur-2xl -z-10" />
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-cyan-500/10 via-violet-500/10 to-fuchsia-500/10 dark:from-cyan-500/10 dark:via-violet-500/10 dark:to-fuchsia-500/10 blur-xl -z-10 animate-pulse" />
+          {/* Light theme specific gradient */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-orange-400/15 via-rose-400/15 to-purple-400/15 blur-2xl -z-10 dark:opacity-0" />
           
           <Card className="backdrop-blur-2xl bg-white/30 dark:bg-black/30 border border-white/40 dark:border-white/20 p-6 shadow-2xl relative overflow-hidden">
             {/* Glass reflection effect */}
@@ -384,12 +386,12 @@ export default function Dashboard() {
                 {processing ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Processing...
+                    AI is analyzing your notes...
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Process Notes
+                    Process Notes with AI
                   </>
                 )}
               </HoverBorderGradient>
@@ -424,8 +426,31 @@ export default function Dashboard() {
           </Card>
         </motion.div>
 
+        {/* Processing State */}
+        {processing && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <Card className="backdrop-blur-xl bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/20 p-8">
+              <div className="flex flex-col items-center gap-4">
+                <Loader />
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    AI is extracting key insights...
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Analyzing your notes for decisions, action items, and questions
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
+
         {/* Board Section */}
-        {cards.length > 0 ? (
+        {cards.length > 0 && !processing ? (
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {(["decision", "action", "question"] as CardType[]).map((type, index) => {
@@ -467,8 +492,12 @@ export default function Dashboard() {
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
                                       className={`${config.cardBg} backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/20 rounded-lg p-4 shadow-lg transition-all cursor-move ${
-                                        snapshot.isDragging ? "shadow-2xl scale-105 rotate-2" : ""
+                                        snapshot.isDragging ? "shadow-2xl scale-105 rotate-2 z-[200]" : ""
                                       }`}
+                                      style={{
+                                        ...provided.draggableProps.style,
+                                        zIndex: snapshot.isDragging ? 200 : 'auto',
+                                      }}
                                     >
                                       <p className="text-foreground text-sm leading-relaxed">
                                         {card.content}
@@ -493,7 +522,7 @@ export default function Dashboard() {
               })}
             </div>
           </DragDropContext>
-        ) : (
+        ) : !processing ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -506,7 +535,7 @@ export default function Dashboard() {
               </p>
             </Card>
           </motion.div>
-        )}
+        ) : null}
       </div>
     </div>
   );
