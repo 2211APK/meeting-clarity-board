@@ -12,6 +12,7 @@ import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { GradientButton } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 
@@ -376,25 +377,12 @@ export default function Dashboard() {
               className="min-h-[200px] resize-none backdrop-blur-xl bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/20 focus:bg-white/30 dark:focus:bg-black/30 shadow-lg transition-all duration-300"
             />
             <div className="flex gap-3 mt-4 flex-wrap">
-              <HoverBorderGradient
-                as="button"
+              <GradientButton
                 onClick={handleProcess}
-                containerClassName={processing || !notes.trim() ? "opacity-50 cursor-not-allowed" : ""}
-                className="text-sm font-medium"
-                style={processing || !notes.trim() ? { pointerEvents: 'none' } : {}}
+                disabled={processing || !notes.trim()}
               >
-                {processing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    AI is analyzing your notes...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    Process Notes with AI
-                  </>
-                )}
-              </HoverBorderGradient>
+                {processing ? "Processing..." : "Process Notes"}
+              </GradientButton>
               {cards.length > 0 && (
                 <>
                   <Button

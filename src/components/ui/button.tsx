@@ -188,7 +188,7 @@ const ShineEffect = ({ isPressed }: { isPressed: boolean }) => {
   );
 };
 
-export const MetalButton = React.forwardRef<
+const MetalButton = React.forwardRef<
   HTMLButtonElement,
   MetalButtonProps
 >(({ children, className, variant = "default", ...props }, ref) => {
@@ -383,4 +383,47 @@ function GlassFilter() {
   );
 }
 
-export { Button, buttonVariants, LiquidButton }
+export interface GradientButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  asChild?: boolean;
+}
+
+const gradientButtonVariants = cva(
+  [
+    "gradient-button",
+    "inline-flex items-center justify-center",
+    "rounded-[11px] min-w-[132px] px-9 py-4",
+    "text-base leading-[19px] font-[500] text-white",
+    "font-sans font-bold",
+    "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+    "disabled:pointer-events-none disabled:opacity-50",
+  ],
+  {
+    variants: {
+      variant: {
+        default: "",
+        variant: "gradient-button-variant",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+);
+
+const GradientButton = React.forwardRef<HTMLButtonElement, GradientButtonProps>(
+  ({ className, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button";
+    return (
+      <Comp
+        className={cn(gradientButtonVariants({ className }))}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
+
+GradientButton.displayName = "GradientButton";
+
+export { Button, buttonVariants, LiquidButton, MetalButton, GradientButton, gradientButtonVariants }
