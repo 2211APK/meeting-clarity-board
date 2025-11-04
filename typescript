@@ -1,8 +1,9 @@
-<AnimatedGradientBackground
-  startingGap={125}
-  Breathing={true}
-  animationSpeed={0.02}
-  breathingRange={5}
-  topOffset={0}
-  containerClassName="-z-10"
-/>
+import { GradientButton } from "@/components/ui/button";
+
+// Then in the JSX:
+<GradientButton
+  onClick={handleProcess}
+  disabled={processing || !notes.trim()}
+>
+  {processing ? "Processing..." : "Process Notes"}
+</GradientButton>
