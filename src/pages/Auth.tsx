@@ -154,7 +154,7 @@ interface AuthComponentProps {
   redirectAfterAuth?: string;
 }
 
-const AuthComponent = ({ logo = <DefaultLogo />, brandName = "ClearPoint", redirectAfterAuth = "/" }: AuthComponentProps) => {
+const AuthComponent = ({ logo = <DefaultLogo />, brandName = "ClearPoint", redirectAfterAuth = "/dashboard" }: AuthComponentProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
