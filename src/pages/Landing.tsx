@@ -673,9 +673,16 @@ export default function Landing() {
             </div>
           }
         >
-          <div className="flex justify-center items-center h-full">
-            {/* Placeholder for scroll effect */}
-          </div>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover rounded-2xl"
+          >
+            <source src="YOUR_VIDEO_URL_HERE.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
         </ContainerScroll>
       </section>
 
