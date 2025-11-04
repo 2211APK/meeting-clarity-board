@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DroppableStateSnapshot, DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
 import { Loader2, Copy, Check, Sparkles, Home, FileText, Settings, Sun, Moon } from "lucide-react";
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { toast } from "sonner";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { GradientButton } from "@/components/ui/button";
@@ -51,6 +51,7 @@ ACTION: Jessica will draft the marketing timeline and coordinate with the conten
 export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [notes, setNotes] = useState(EXAMPLE_NOTES);
   const [cards, setCards] = useState<NoteCard[]>([]);
   const [processing, setProcessing] = useState(false);
@@ -60,6 +61,22 @@ export default function Dashboard() {
 
   const saveNote = useMutation(api.notes.saveNote);
   const userNotes = useQuery(api.notes.getUserNotes);
+
+  // Handle incoming state from ProcessNotes page
+  useEffect(() => {
+    if (location.state?.cards) {
+      setCards(location.state.cards);
+      if (location.state.noteTitle) setNoteTitle(location.state.noteTitle);
+      if (location.state.notes) setNotes(location.state.notes);
+      toast.success(`AI extracted ${location.state.cards.length} items from your notes`);
+      // Clear the state
+      navigate("/dashboard", { replace: true, state: {} });
+    }
+    if (location.state?.error) {
+      toast.error(location.state.error);
+      navigate("/dashboard", { replace: true, state: {} });
+    }
+  }, [location.state, navigate]);
 
   useEffect(() => {
     // Check for saved theme preference or default to light
@@ -138,6 +155,21 @@ export default function Dashboard() {
 
   const extractMeetingNotes = useAction(api.ai.extractMeetingNotes as any);
 
+  const handleProcess = async () => {
+    if (!notes.trim()) {
+      toast.error("Please enter some notes to process");
+      return;
+    }
+    
+    // Navigate to processing page
+    navigate("/process-notes", { 
+      state: { 
+        notes: notes,
+        noteTitle: noteTitle 
+      } 
+    });
+  };
+
   const handleSaveNote = async () => {
     if (!noteTitle.trim()) {
       toast.error("Please enter a title for your note");
@@ -160,24 +192,6 @@ export default function Dashboard() {
     } catch (error) {
       toast.error("Failed to save note");
       console.error(error);
-    }
-  };
-
-  const handleProcess = async () => {
-    setProcessing(true);
-    try {
-      // Try AI-powered extraction first
-      const extracted = await extractMeetingNotes({ notes });
-      setCards(extracted);
-      toast.success(`AI extracted ${extracted.length} items from your notes`);
-    } catch (error) {
-      console.error("Error processing notes with AI:", error);
-      // Fallback to regex-based extraction
-      const extracted = extractCards(notes);
-      setCards(extracted);
-      toast.success(`Extracted ${extracted.length} items from your notes (fallback mode)`);
-    } finally {
-      setProcessing(false);
     }
   };
 
@@ -379,9 +393,9 @@ export default function Dashboard() {
             <div className="flex gap-3 mt-4 flex-wrap">
               <GradientButton
                 onClick={handleProcess}
-                disabled={processing || !notes.trim()}
+                disabled={!notes.trim()}
               >
-                {processing ? "Processing..." : "Process Notes"}
+                Process Notes
               </GradientButton>
               {cards.length > 0 && (
                 <>
