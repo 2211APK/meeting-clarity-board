@@ -681,18 +681,7 @@ export default function Landing() {
             playsInline
             className="w-full h-full object-cover rounded-2xl"
           >
-            {/* 
-              The GitHub link you provided won't work directly in a video tag.
-              
-              To add your video:
-              1. Go to the Assets tab in the left sidebar
-              2. Upload your video file (unwatermark_18209ab4-75cf-4820-85b6-b45a8de26ab3_1080p_mp4_30.mp4)
-              3. Copy the generated URL
-              4. Replace the src below with your video URL
-              
-              Example: <source src="https://your-cdn.com/your-video.mp4" type="video/mp4" />
-            */}
-            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+            <source src="/assets/unwatermark_18209ab4-75cf-4820-85b6-b45a8de26ab3_1080p_mp4_30__3_.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </ContainerScroll>
