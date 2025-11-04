@@ -683,7 +683,16 @@ export default function Landing() {
             playsInline
             className="w-full h-full object-cover rounded-2xl"
           >
-            <source src="YOUR_VIDEO_URL_HERE.mp4" type="video/mp4" />
+            {/* 
+              To add your video:
+              1. Go to the Assets tab in the left sidebar
+              2. Upload your video file
+              3. Copy the generated URL
+              4. Replace the src below with your video URL
+              
+              Example: <source src="https://your-cdn.com/your-video.mp4" type="video/mp4" />
+            */}
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </ContainerScroll>
