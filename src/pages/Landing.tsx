@@ -679,7 +679,10 @@ export default function Landing() {
             loop
             muted
             playsInline
+            preload="auto"
             className="w-full h-full object-cover rounded-2xl"
+            onError={(e) => console.error("Video failed to load:", e)}
+            onLoadedData={() => console.log("Video loaded successfully")}
           >
             <source src="/assets/unwatermark_18209ab4-75cf-4820-85b6-b45a8de26ab3_1080p_mp4_30__3_.mp4" type="video/mp4" />
             Your browser does not support the video tag.
