@@ -163,9 +163,12 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-violet-50 via-purple-50 to-blue-50 dark:from-gray-900 dark:via-purple-950 dark:to-slate-900">
+      {/* Animated gradient overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))] dark:bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),rgba(0,0,0,0))]" />
+      
       {/* Main Content */}
-      <div>
+      <div className="relative z-10">
         {/* Floating Navigation Bar */}
         <motion.nav
           initial={{ y: -100, opacity: 0 }}
