@@ -33,8 +33,17 @@ export const extractMeetingNotes = action({
 - ACTIONS: Tasks, todos, or action items with owners/deadlines
 - QUESTIONS: Open questions, uncertainties, or items needing clarification
 
-Return a JSON array of objects with "content" (the extracted text) and "type" (either "decision", "action", or "question").
-Only extract meaningful items, skip headers, attendee lists, and short/irrelevant lines.`
+Return a JSON object with an "items" array containing objects with "content" (the extracted text) and "type" (either "decision", "action", or "question").
+Only extract meaningful items, skip headers, attendee lists, and short/irrelevant lines.
+
+Example format:
+{
+  "items": [
+    {"content": "We decided to launch the product in Q2", "type": "decision"},
+    {"content": "John will prepare the budget by Friday", "type": "action"},
+    {"content": "Do we have approval from legal?", "type": "question"}
+  ]
+}`
           },
           {
             role: "user",
@@ -48,6 +57,7 @@ Only extract meaningful items, skip headers, attendee lists, and short/irrelevan
 
     if (!response.ok) {
       const error = await response.text();
+      console.error("OpenAI API error:", error);
       throw new Error(`OpenAI API error: ${error}`);
     }
 
@@ -58,15 +68,20 @@ Only extract meaningful items, skip headers, attendee lists, and short/irrelevan
       return [];
     }
 
-    const parsed = JSON.parse(content);
-    
-    // Handle different possible response formats
-    const items = parsed.items || parsed.cards || parsed.results || [];
-    
-    return items.map((item: any, index: number) => ({
-      id: `card-${index}`,
-      content: item.content || item.text || "",
-      type: item.type || "question"
-    }));
+    try {
+      const parsed = JSON.parse(content);
+      
+      // Handle different possible response formats
+      const items = parsed.items || parsed.cards || parsed.results || [];
+      
+      return items.map((item: any, index: number) => ({
+        id: `card-${index}`,
+        content: item.content || item.text || "",
+        type: item.type || "question"
+      }));
+    } catch (parseError) {
+      console.error("Failed to parse OpenAI response:", parseError);
+      return [];
+    }
   },
 });

@@ -682,9 +682,11 @@ export default function Landing() {
             className="w-full h-full object-cover rounded-2xl"
           >
             {/* 
+              The GitHub link you provided won't work directly in a video tag.
+              
               To add your video:
               1. Go to the Assets tab in the left sidebar
-              2. Upload your video file
+              2. Upload your video file (unwatermark_18209ab4-75cf-4820-85b6-b45a8de26ab3_1080p_mp4_30.mp4)
               3. Copy the generated URL
               4. Replace the src below with your video URL
               
