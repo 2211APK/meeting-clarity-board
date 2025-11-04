@@ -1,89 +1,127 @@
-"use client";
+import { cva, type VariantProps } from "class-variance-authority"
 
-import { Globe } from "@/components/ui/cosmic-404";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router";
-import { motion } from "framer-motion";
+import { cn } from "@/lib/utils"
 
-export interface NotFoundProps {
-  title?: string;
-  description?: string;
-  backText?: string;
-  onBack?: () => void;
+function Empty({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="empty"
+      className={cn(
+        "flex min-w-0 flex-1 flex-col items-center justify-center gap-6 rounded-xl border-dashed p-6 text-center text-balance md:p-12",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-export default function NotFound({
-  title = "404",
-  description = "Oops! Looks like you're lost in space. The page you're looking for doesn't exist.",
-  backText = "Return Home",
-  onBack,
-}: NotFoundProps) {
-  const navigate = useNavigate();
-
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      navigate("/");
-    }
-  };
-
+function EmptyHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className="flex flex-col justify-center items-center px-4 min-h-screen bg-background relative overflow-hidden">
-      {/* Cosmic background effect */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background" />
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative z-10 flex flex-col items-center gap-8 max-w-2xl mx-auto text-center"
-      >
-        {/* Globe */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="w-64 h-64 md:w-80 md:h-80"
-        >
-          <Globe className="w-full h-full" />
-        </motion.div>
+    <div
+      data-slot="empty-header"
+      className={cn(
+        "flex max-w-sm flex-col items-center text-center",
+        className
+      )}
+      {...props}
+    />
+  )
+}
 
-        {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-8xl md:text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-primary/60"
-        >
-          {title}
-        </motion.h1>
+const emptyMediaVariants = cva(
+  "flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        default: "bg-transparent",
+        icon: "relative flex size-9 shrink-0 items-center justify-center rounded-md border bg-card text-foreground shadow-sm shadow-black/5 before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-md)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/8%)] [&_svg:not([class*='size-'])]:size-4.5",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
 
-        {/* Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-          className="text-lg md:text-xl text-muted-foreground max-w-md"
-        >
-          {description}
-        </motion.p>
-
-        {/* Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-        >
-          <Button 
-            onClick={handleBack}
-            size="lg"
-            className="mt-4 gap-2 hover:scale-105 transition-all duration-300"
-          >
-            {backText}
-          </Button>
-        </motion.div>
-      </motion.div>
+function EmptyMedia({
+  className,
+  variant = "default",
+  ...props
+}: React.ComponentProps<"div"> & VariantProps<typeof emptyMediaVariants>) {
+  return (
+    <div
+      data-slot="empty-media"
+      data-variant={variant}
+      className={cn("relative mb-6", className)}
+      {...props}
+    >
+      {variant === "icon" && (
+        <>
+          <div
+            className={cn(
+              emptyMediaVariants({ variant, className }),
+              "pointer-events-none absolute bottom-px origin-bottom-left -translate-x-0.5 scale-84 -rotate-10 shadow-none"
+            )}
+            aria-hidden="true"
+          />
+          <div
+            className={cn(
+              emptyMediaVariants({ variant, className }),
+              "pointer-events-none absolute bottom-px origin-bottom-right translate-x-0.5 scale-84 rotate-10 shadow-none"
+            )}
+            aria-hidden="true"
+          />
+        </>
+      )}
+      <div
+        className={cn(emptyMediaVariants({ variant, className }))}
+        {...props}
+      />
     </div>
-  );
+  )
+}
+
+function EmptyTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="empty-title"
+      className={cn("font-heading text-xl leading-none", className)}
+      {...props}
+    />
+  )
+}
+
+function EmptyDescription({ className, ...props }: React.ComponentProps<"p">) {
+  return (
+    <div
+      data-slot="empty-description"
+      className={cn(
+        "text-sm/relaxed text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary [[data-slot=empty-title]+&]:mt-1",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function EmptyContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="empty-content"
+      className={cn(
+        "flex w-full max-w-sm min-w-0 flex-col items-center gap-4 text-sm text-balance",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Empty,
+  EmptyHeader,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+  EmptyMedia,
 }
