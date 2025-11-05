@@ -173,9 +173,9 @@ export default function Landing() {
           animate={{ y: 0, opacity: 1 }}
           className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl"
         >
-          <div className="backdrop-blur-lg bg-background/5 border border-border/20 rounded-full shadow-lg px-4 py-2 flex items-center justify-between">
+          <div className="backdrop-blur-xl bg-white/10 dark:bg-black/20 border border-white/30 dark:border-white/20 rounded-full shadow-2xl px-4 py-2 flex items-center justify-between">
             <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-              <span className="text-lg font-bold text-foreground">Nulsify</span>
+              <span className="text-lg font-bold text-foreground" style={{ fontFamily: "'Sans Forgetica', sans-serif" }}>Nulsify</span>
             </div>
 
             <div className="flex items-center">

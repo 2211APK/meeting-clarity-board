@@ -3,6 +3,9 @@
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
+/* Import Sans Forgetica font */
+@import url('https://fonts.googleapis.com/css2?family=Sans+Forgetica&display=swap');
+
 /* DO NOT CHANGE */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
