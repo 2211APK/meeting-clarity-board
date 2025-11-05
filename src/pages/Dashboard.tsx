@@ -364,15 +364,12 @@ export default function Dashboard() {
           transition={{ delay: 0.1 }}
           className="mb-8 relative"
         >
-          {/* Premium Gradient Background */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-blue-500/20 dark:from-purple-500/20 dark:via-pink-500/20 dark:to-blue-500/20 blur-2xl -z-10" />
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-cyan-500/10 via-violet-500/10 to-fuchsia-500/10 dark:from-cyan-500/10 dark:via-violet-500/10 dark:to-fuchsia-500/10 blur-xl -z-10 animate-pulse" />
-          {/* Light theme specific gradient */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-orange-400/15 via-rose-400/15 to-purple-400/15 blur-2xl -z-10 dark:opacity-0" />
+          {/* Simplified Premium Gradient Background */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-blue-500/10 blur-3xl -z-10" />
           
-          <Card className="backdrop-blur-2xl bg-white/30 dark:bg-black/30 border border-white/40 dark:border-white/20 p-6 shadow-2xl relative overflow-hidden">
-            {/* Glass reflection effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
+          <Card className="backdrop-blur-xl bg-white/80 dark:bg-black/40 border border-white/30 dark:border-white/20 p-6 shadow-xl relative overflow-hidden">
+            {/* Subtle glass reflection effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
@@ -382,13 +379,13 @@ export default function Dashboard() {
               value={noteTitle}
               onChange={(e) => setNoteTitle(e.target.value)}
               placeholder="Note title (optional)"
-              className="w-full px-4 py-2 mb-3 rounded-lg border border-white/30 dark:border-white/20 bg-white/20 dark:bg-black/20 backdrop-blur-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-lg transition-all duration-300 hover:bg-white/30 dark:hover:bg-black/30"
+              className="w-full px-4 py-2 mb-3 rounded-lg border border-border bg-background/50 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
             />
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Type Here..."
-              className="min-h-[200px] resize-none backdrop-blur-xl bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/20 focus:bg-white/30 dark:focus:bg-black/30 shadow-lg transition-all duration-300"
+              className="min-h-[200px] resize-none backdrop-blur-sm bg-background/50 border-border focus:bg-background/70 transition-all duration-200"
             />
             <div className="flex gap-3 mt-4 flex-wrap">
               <GradientButton
@@ -466,7 +463,7 @@ export default function Dashboard() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2 + index * 0.1 }}
                   >
-                    <Card className={`backdrop-blur-xl ${config.bgClass} bg-white/5 dark:bg-black/5 border border-white/20 dark:border-white/10 p-4 shadow-xl min-h-[400px]`}>
+                    <Card className={`backdrop-blur-sm ${config.bgClass} border p-4 shadow-lg min-h-[400px]`}>
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="font-semibold text-foreground text-lg">
                           {config.title}
@@ -493,7 +490,7 @@ export default function Dashboard() {
                                       ref={provided.innerRef}
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
-                                      className={`${config.cardBg} backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/30 dark:border-white/20 rounded-lg p-4 shadow-lg transition-all cursor-move ${
+                                      className={`${config.cardBg} backdrop-blur-sm border rounded-lg p-4 shadow-md transition-all cursor-move ${
                                         snapshot.isDragging ? "shadow-2xl scale-105 rotate-2 z-[200]" : ""
                                       }`}
                                       style={{
