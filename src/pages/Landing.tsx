@@ -674,19 +674,14 @@ export default function Landing() {
             </div>
           }
         >
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            className="w-full h-full object-cover rounded-2xl"
-            onError={(e) => console.error("Video failed to load:", e)}
-            onLoadedData={() => console.log("Video loaded successfully")}
-          >
-            <source src="/assets/unwatermark_18209ab4-75cf-4820-85b6-b45a8de26ab3_1080p_mp4_30__3_.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          <iframe
+            className="w-full h-full rounded-2xl"
+            src="https://www.youtube.com/embed/PdvZZz0dgxo?autoplay=1&mute=1&loop=1&playlist=PdvZZz0dgxo&controls=0&modestbranding=1&rel=0"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </ContainerScroll>
       </section>
 
