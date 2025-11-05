@@ -675,12 +675,11 @@ export default function Landing() {
           }
         >
           <iframe
-            className="w-full h-full rounded-2xl"
-            src="https://www.youtube.com/embed/PdvZZz0dgxo?autoplay=1&mute=1&loop=1&playlist=PdvZZz0dgxo&controls=0&modestbranding=1&rel=0"
+            className="w-full h-full rounded-2xl pointer-events-none"
+            src="https://www.youtube.com/embed/PdvZZz0dgxo?autoplay=1&mute=1&loop=1&playlist=PdvZZz0dgxo&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&iv_load_policy=3"
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
           />
         </ContainerScroll>
       </section>
