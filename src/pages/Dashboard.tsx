@@ -290,14 +290,14 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       {/* Page Backdrop (light / dark) */}
-      <div className="absolute inset-0 -z-10 dark:hidden">
+      <div className="absolute inset-0 z-0 dark:hidden">
         <img
           src="https://harmless-tapir-303.convex.cloud/api/storage/026444ea-d6b5-478a-a55b-3f9a42c5430a"
           alt=""
           className="w-full h-full object-cover opacity-90 pointer-events-none select-none"
         />
       </div>
-      <div className="absolute inset-0 -z-10 hidden dark:block">
+      <div className="absolute inset-0 z-0 hidden dark:block">
         <img
           src="https://harmless-tapir-303.convex.cloud/api/storage/3891c785-c9a0-42e1-8708-2d578244fb9e"
           alt=""
@@ -361,17 +361,15 @@ export default function Dashboard() {
                 {user.email || "Guest User"}
               </span>
             )}
-            <InteractiveHoverButton 
-              text="Log Out" 
-              onClick={signOut}
-              className="w-28"
-            />
+            <Button variant="outline" onClick={signOut} className="w-28">
+              Log Out
+            </Button>
           </div>
         </div>
       </motion.header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
         {/* Input Section */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
