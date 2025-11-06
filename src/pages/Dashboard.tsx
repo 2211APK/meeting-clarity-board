@@ -289,6 +289,22 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
+      {/* Page Backdrop (light / dark) */}
+      <div className="absolute inset-0 -z-10 dark:hidden">
+        <img
+          src="https://harmless-tapir-303.convex.cloud/api/storage/026444ea-d6b5-478a-a55b-3f9a42c5430a"
+          alt=""
+          className="w-full h-full object-cover opacity-90 pointer-events-none select-none"
+        />
+      </div>
+      <div className="absolute inset-0 -z-10 hidden dark:block">
+        <img
+          src="https://harmless-tapir-303.convex.cloud/api/storage/3891c785-c9a0-42e1-8708-2d578244fb9e"
+          alt=""
+          className="w-full h-full object-cover opacity-90 pointer-events-none select-none"
+        />
+      </div>
+
       {/* Top Dock Navigation */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
         <Dock magnification={60} distance={100} className="pointer-events-auto">
@@ -363,7 +379,7 @@ export default function Dashboard() {
           transition={{ delay: 0.1 }}
           className="mb-8 relative"
         >
-          <Card className="backdrop-blur-xl bg-gradient-to-br from-[#001a33] via-[#003d7a] to-[#0066cc] dark:bg-[#0a0a0a]/90 border border-white/20 dark:border-white/10 p-6 shadow-xl relative overflow-hidden">
+          <Card className="backdrop-blur-xl bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10 p-6 shadow-xl relative overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
