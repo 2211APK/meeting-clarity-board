@@ -145,8 +145,20 @@
 }
 
 @keyframes shimmer-slide {
-  to {
-    translate: calc(-50cqw - 50%) 0;
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes liquid {
+  0%, 100% { 
+    transform: translateY(-10%) rotate(0deg); 
+  }
+  50% { 
+    transform: translateY(10%) rotate(3deg); 
   }
 }
 

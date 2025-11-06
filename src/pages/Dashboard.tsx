@@ -364,12 +364,18 @@ export default function Dashboard() {
           transition={{ delay: 0.1 }}
           className="mb-8 relative"
         >
-          {/* Simplified Premium Gradient Background */}
-          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-blue-500/10 blur-3xl -z-10" />
+          {/* Liquid Glass Background with Animated Gradient */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-blue-500/20 blur-3xl -z-10 animate-pulse" style={{ animationDuration: '4s' }} />
           
-          <Card className="backdrop-blur-xl bg-white/80 dark:bg-black/40 border border-white/30 dark:border-white/20 p-6 shadow-xl relative overflow-hidden">
-            {/* Subtle glass reflection effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+          <Card className="backdrop-blur-2xl bg-white/60 dark:bg-black/30 border border-white/40 dark:border-white/30 p-6 shadow-2xl relative overflow-hidden">
+            {/* Liquid Glass Reflection Layers */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-white/5 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-purple-500/5 to-pink-500/5 pointer-events-none" />
+            
+            {/* Animated Shimmer Effect */}
+            <div className="absolute inset-0 opacity-30 pointer-events-none">
+              <div className="absolute top-0 -left-full h-full w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer-slide" style={{ animationDuration: '3s' }} />
+            </div>
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
@@ -379,13 +385,13 @@ export default function Dashboard() {
               value={noteTitle}
               onChange={(e) => setNoteTitle(e.target.value)}
               placeholder="Note title (optional)"
-              className="w-full px-4 py-2 mb-3 rounded-lg border border-border bg-background/50 backdrop-blur-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all duration-200"
+              className="w-full px-4 py-2 mb-3 rounded-lg border border-white/30 dark:border-white/20 bg-white/40 dark:bg-black/20 backdrop-blur-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:bg-white/50 dark:focus:bg-black/30 transition-all duration-300 shadow-lg"
             />
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Type Here..."
-              className="min-h-[200px] resize-none backdrop-blur-sm bg-background/50 border-border focus:bg-background/70 transition-all duration-200"
+              className="min-h-[200px] resize-none backdrop-blur-xl bg-white/40 dark:bg-black/20 border-white/30 dark:border-white/20 focus:bg-white/50 dark:focus:bg-black/30 focus:border-primary/50 transition-all duration-300 shadow-lg"
             />
             <div className="flex gap-3 mt-4 flex-wrap">
               <GradientButton
