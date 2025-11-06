@@ -336,9 +336,8 @@ export default function Dashboard() {
         className="backdrop-blur-xl bg-white/10 dark:bg-black/10 border-b border-white/20 dark:border-white/10 sticky top-0 z-40"
       >
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/")}>
-            <img src="./logo.svg" alt="Logo" className="h-8 w-8" />
-            <h1 className="text-xl font-bold text-foreground">Meeting Memory Board</h1>
+          <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
+            <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Sans Forgetica', sans-serif" }}>Nulsify</h1>
           </div>
           <div className="flex items-center gap-4">
             {user && (
