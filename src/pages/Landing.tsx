@@ -19,6 +19,7 @@ import { TextLoop } from "@/components/ui/text-loop";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import { Input } from "@/components/ui/input";
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -165,6 +166,22 @@ export default function Landing() {
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
       
+      {/* Page Backdrop (light / dark) */}
+      <div className="absolute inset-0 z-0 dark:hidden">
+        <img
+          src="https://harmless-tapir-303.convex.cloud/api/storage/026444ea-d6b5-478a-a55b-3f9a42c5430a"
+          alt=""
+          className="w-full h-full object-cover opacity-90 pointer-events-none select-none"
+        />
+      </div>
+      <div className="absolute inset-0 z-0 hidden dark:block">
+        <img
+          src="https://harmless-tapir-303.convex.cloud/api/storage/3891c785-c9a0-42e1-8708-2d578244fb9e"
+          alt=""
+          className="w-full h-full object-cover opacity-90 pointer-events-none select-none"
+        />
+      </div>
+
       {/* Main Content */}
       <div className="relative z-10">
         {/* Floating Navigation Bar */}
@@ -319,12 +336,13 @@ export default function Landing() {
             </motion.p>
           </motion.div>
 
+          {/* Hero CTA Buttons */}
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ delay: 0.25, duration: 0.8, ease: "easeOut" }}
-            className="flex gap-4 justify-center flex-wrap mb-16 mt-10"
+            className="flex gap-4 justify-center flex-wrap mb-8 mt-10"
           >
             <LiquidButton
               onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
@@ -333,6 +351,36 @@ export default function Landing() {
               <Sparkles className="mr-2 h-5 w-5 inline" />
               {isAuthenticated ? "Go to Dashboard" : "Start Organizing"}
             </LiquidButton>
+          </motion.div>
+
+          {/* Assistant-style Glass Panel (inspired by Highlight) */}
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ delay: 0.3, duration: 0.7, ease: "easeOut" }}
+            className="flex justify-center mb-16"
+          >
+            <Card className="w-full max-w-3xl backdrop-blur-2xl bg-white/10 dark:bg-black/20 border border-white/30 dark:border-white/15 shadow-2xl p-4 md:p-6 rounded-2xl">
+              <div className="flex flex-col md:flex-row items-center gap-3">
+                <Input
+                  placeholder="Paste a few lines of your meeting notes..."
+                  className="flex-1 bg-background/50 dark:bg-background/70 border-white/30 dark:border-white/15"
+                />
+                <Button
+                  onClick={() => navigate(isAuthenticated ? "/dashboard" : "/auth")}
+                  className="shrink-0"
+                >
+                  Try with sample
+                </Button>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                <span className="px-2 py-1 rounded-full bg-white/20 dark:bg-white/10 border border-white/20">Summarize</span>
+                <span className="px-2 py-1 rounded-full bg-white/20 dark:bg-white/10 border border-white/20">Decisions</span>
+                <span className="px-2 py-1 rounded-full bg-white/20 dark:bg-white/10 border border-white/20">Action Items</span>
+                <span className="px-2 py-1 rounded-full bg-white/20 dark:bg-white/10 border border-white/20">Questions</span>
+              </div>
+            </Card>
           </motion.div>
 
           {/* Feature Cards - Directly Under Buttons */}
