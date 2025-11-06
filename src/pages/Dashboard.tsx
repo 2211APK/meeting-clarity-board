@@ -363,7 +363,7 @@ export default function Dashboard() {
           transition={{ delay: 0.1 }}
           className="mb-8 relative"
         >
-          <Card className="backdrop-blur-xl bg-white/80 dark:bg-[#0a0a0a]/90 border border-white/20 dark:border-white/10 p-6 shadow-xl relative overflow-hidden">
+          <Card className="backdrop-blur-xl bg-gradient-to-br from-[#001a33] via-[#003d7a] to-[#0066cc] dark:bg-[#0a0a0a]/90 border border-white/20 dark:border-white/10 p-6 shadow-xl relative overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
