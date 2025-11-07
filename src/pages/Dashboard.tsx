@@ -5,27 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
-import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DroppableStateSnapshot, DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
-import { Loader2, Copy, Check, Sparkles, Home, FileText, Settings, Sun, Moon } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { Home, FileText, Settings, Sun, Moon, Sparkles, Check, Copy } from "lucide-react";
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 import { useNavigate, useLocation } from "react-router";
 import { toast } from "sonner";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { GradientButton } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
-import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { FabButton } from "@/components/layout/FabButton";
 import { BoardContainer } from "@/components/board/BoardContainer";
 import type { FreeCard, CardType } from "@/types/board";
 
-/* removed duplicate local CardType; using imported CardType from @/types/board */
-
-interface NoteCard {
+// Local type for input mode list items
+type NoteCard = {
   id: string;
   content: string;
   type: CardType;
-}
+};
 
 const EXAMPLE_NOTES = `Meeting Notes - Product Roadmap Discussion (Jan 15, 2024)
 
@@ -55,21 +50,37 @@ export default function Dashboard() {
   const { isLoading, isAuthenticated, user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [notes, setNotes] = useState(EXAMPLE_NOTES);
-  const [cards, setCards] = useState<NoteCard[]>([]);
-  const [processing, setProcessing] = useState(false);
-  const [copied, setCopied] = useState(false);
+
+  // Theme
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const toggleTheme = () => {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    document.documentElement.classList.toggle("dark", next === "dark");
+  };
+
+  // Input mode state
   const [noteTitle, setNoteTitle] = useState("");
+  const [notes, setNotes] = useState(EXAMPLE_NOTES);
+
+  // Board mode state
+  const [cards, setCards] = useState<NoteCard[]>([]);
   const [freeCards, setFreeCards] = useState<FreeCard[]>([]);
   const [zoom, setZoom] = useState(1);
-  // Add a ref to ensure single toast handling per navigation (avoids StrictMode double effects)
+
+  // Feedback
+  const [copied, setCopied] = useState(false);
+
+  // Convex
+  const saveNote = useMutation(api.notes.saveNote);
+  // Optional: keep for future user history views (unused UI-wise)
+  useQuery(api.notes.getUserNotes);
+
+  // Single-toast guard for navigation returns from /process-notes
   const handledNavigationRef = useRef(false);
 
-  const saveNote = useMutation(api.notes.saveNote);
-  const userNotes = useQuery(api.notes.getUserNotes);
-
-  // Normalize incoming card types from AI / legacy into new categories
+  // Normalize to the new categories
   const normalizeType = (t: string): CardType => {
     const s = (t || "").toLowerCase();
     if (s.includes("decision") || s.includes("high")) return "high_importance";
@@ -80,7 +91,43 @@ export default function Dashboard() {
     return "todo";
   };
 
-  // Adjust incoming results from ProcessNotes page with single-toast guard and error code display
+  // Heuristic extractor for a live preview in Input Mode (not persisted)
+  const extractCards = (text: string): NoteCard[] => {
+    const lines = text.split("\n").filter((l) => l.trim().length > 0);
+    const extracted: NoteCard[] = [];
+    let id = 0;
+
+    for (const line of lines) {
+      const t = line.trim();
+      if (t.length < 10 || /^meeting|^attendees/i.test(t)) continue;
+
+      if (/follow[-\s]?up|follow up/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "follow_up" });
+        continue;
+      }
+      if (/we decided|final decision|agreed that|we're going with|going with/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "high_importance" });
+        continue;
+      }
+      if (/\b([A-Z][a-z]+)\b\s+(will|needs? to|to)\b/i.test(t) || /owner|assignee/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "people" });
+        continue;
+      }
+      if (/TODO:|ACTION:|needs? to|will\s+\w+|by\s+(next\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|month|end)/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "todo" });
+        continue;
+      }
+      if (t.includes("?") || /should we|question:|what's|how do we/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "questions" });
+        continue;
+      }
+    }
+    return extracted;
+  };
+
+  const previewCards = useMemo(() => extractCards(notes), [notes]);
+
+  // Handle return from /process-notes with single toast
   useEffect(() => {
     if (handledNavigationRef.current) return;
 
@@ -95,6 +142,18 @@ export default function Dashboard() {
       if (location.state.notes) setNotes(location.state.notes as string);
       toast.success(`AI extracted ${mapped.length} items from your notes`);
       handledNavigationRef.current = true;
+
+      // Initialize free board positions
+      const cols = Math.max(1, Math.floor((window.innerWidth - 200) / 320));
+      const initial: FreeCard[] = mapped.map((c, idx) => {
+        const col = idx % cols;
+        const row = Math.floor(idx / cols);
+        const x = 48 + col * 320;
+        const y = 120 + row * 240;
+        return { ...c, x, y, w: 300, h: 180 };
+      });
+      setFreeCards(initial);
+
       navigate("/dashboard", { replace: true, state: {} });
     } else if (location.state?.error) {
       const errorMessage =
@@ -117,249 +176,91 @@ export default function Dashboard() {
     }
   }, [location.state, navigate]);
 
+  // Theme init and auth redirect
   useEffect(() => {
-    // Check for saved theme preference or default to light
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const saved = localStorage.getItem("theme") as "light" | "dark" | null;
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
-    setTheme(initialTheme);
-    document.documentElement.classList.toggle("dark", initialTheme === "dark");
+    const initial = saved || (prefersDark ? "dark" : "light");
+    setTheme(initial);
+    document.documentElement.classList.toggle("dark", initial === "dark");
   }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
-
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      navigate("/auth");
-    }
+    if (!isLoading && !isAuthenticated) navigate("/auth");
   }, [isLoading, isAuthenticated, navigate]);
 
-  // Update local heuristic extractor to new categories (used for sample/manual)
-  const extractCards = (text: string): NoteCard[] => {
-    const lines = text.split("\n").filter((l) => l.trim().length > 0);
-    const extracted: NoteCard[] = [];
-    let id = 0;
-
-    lines.forEach((line) => {
-      const t = line.trim();
-
-      // Skip headers/short
-      if (t.length < 10 || /^meeting|^attendees/i.test(t)) return;
-
-      // Follow-up
-      if (/follow[-\s]?up|follow up/i.test(t)) {
-        extracted.push({ id: `card-${id++}`, content: t, type: "follow_up" });
-        return;
-      }
-
-      // High importance (decisions/finals)
-      if (/we decided|final decision|agreed that|we're going with|going with/i.test(t)) {
-        extracted.push({ id: `card-${id++}`, content: t, type: "high_importance" });
-        return;
-      }
-
-      // People (assignments/owners)
-      if (/\b([A-Z][a-z]+)\b\s+(will|needs? to|to)\b/i.test(t) || /owner|assignee/i.test(t)) {
-        extracted.push({ id: `card-${id++}`, content: t, type: "people" });
-        return;
-      }
-
-      // To do (actions/tasks)
-      if (/TODO:|ACTION:|needs? to|will\s+\w+|by\s+(next\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|month|end)/i.test(t)) {
-        extracted.push({ id: `card-${id++}`, content: t, type: "todo" });
-        return;
-      }
-
-      // Questions
-      if (t.includes("?") || /should we|question:|what's|how do we/i.test(t)) {
-        extracted.push({ id: `card-${id++}`, content: t, type: "questions" });
-        return;
-      }
-    });
-
-    return extracted;
-  };
-
-  const extractMeetingNotes = useAction(api.ai.extractMeetingNotes as any);
-
-  const handleProcess = async () => {
+  // Actions
+  const handleProcess = () => {
     if (!notes.trim()) {
       toast.error("Please enter some notes to process");
       return;
     }
-    
-    // Navigate to processing page
-    navigate("/process-notes", { 
-      state: { 
-        notes: notes,
-        noteTitle: noteTitle 
-      } 
-    });
+    navigate("/process-notes", { state: { notes, noteTitle } });
   };
 
-  // Map our new categories back to legacy storage categories for backend typing
   const mapToLegacyType = (t: CardType): "decision" | "action" | "question" => {
     if (t === "high_importance") return "decision";
     if (t === "questions") return "question";
-    // Collapse todo, people, follow_up into "action" for storage
     return "action";
   };
-
-  // Initialize freeform cards when AI finishes and cards arrive
-  useEffect(() => {
-    if (cards.length > 0) {
-      // Auto place into a grid for first render of board
-      const cols = Math.max(1, Math.floor((window.innerWidth - 200) / 320));
-      const initial: FreeCard[] = cards.map((c, idx) => {
-        const col = idx % cols;
-        const row = Math.floor(idx / cols);
-        const x = 48 + col * 320;
-        const y = 120 + row * 240;
-        return {
-          ...c,
-          x,
-          y,
-          w: 300,
-          h: 180,
-        };
-      });
-      setFreeCards(initial);
-    }
-  }, [cards]);
 
   const handleSaveNote = async () => {
     if (!noteTitle.trim()) {
       toast.error("Please enter a title for your note");
       return;
     }
-    const hasAny = (freeCards.length || cards.length) > 0;
-    if (!hasAny) {
+    const source = freeCards.length > 0 ? freeCards : cards;
+    if (source.length === 0) {
       toast.error("Please process some notes before saving");
       return;
     }
     try {
-      const source = freeCards.length > 0 ? freeCards : cards;
       const legacyCards = source.map((c) => ({
         id: c.id,
         content: c.content,
         type: mapToLegacyType(c.type as CardType),
       }));
-      await saveNote({
-        title: noteTitle,
-        content: notes,
-        cards: legacyCards,
-      });
+      await saveNote({ title: noteTitle, content: notes, cards: legacyCards });
       toast.success("Note saved successfully!");
       setNoteTitle("");
-    } catch (error) {
+    } catch (e) {
+      console.error(e);
       toast.error("Failed to save note");
-      console.error(error);
     }
-  };
-
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    const sourceType = result.source.droppableId as CardType;
-    const destType = result.destination.droppableId as CardType;
-
-    // Disallow cross-column moves in input mode
-    if (sourceType !== destType) return;
-
-    if (result.source.index === result.destination.index) return;
-
-    const newCards = Array.from(cards);
-    const sourceCards = newCards.filter((c) => c.type === sourceType);
-    const [movedCard] = sourceCards.splice(result.source.index, 1);
-    // Insert back to same column different position
-    sourceCards.splice(result.destination.index, 0, movedCard);
-
-    // Rebuild final array: keep other types intact, replace this type's ordering
-    const others = newCards.filter((c) => c.type !== sourceType);
-    setCards([...others, ...sourceCards]);
   };
 
   const handleExport = () => {
-    const high = cards.filter((c) => c.type === "high_importance");
-    const todos = cards.filter((c) => c.type === "todo");
-    const people = cards.filter((c) => c.type === "people");
-    const questions = cards.filter((c) => c.type === "questions");
-    const followUps = cards.filter((c) => c.type === "follow_up");
+    const high = (freeCards.length ? freeCards : cards).filter((c) => c.type === "high_importance");
+    const todos = (freeCards.length ? freeCards : cards).filter((c) => c.type === "todo");
+    const people = (freeCards.length ? freeCards : cards).filter((c) => c.type === "people");
+    const questions = (freeCards.length ? freeCards : cards).filter((c) => c.type === "questions");
+    const followUps = (freeCards.length ? freeCards : cards).filter((c) => c.type === "follow_up");
 
     let output = "";
-
-    if (high.length > 0) {
+    if (high.length) {
       output += "DECISIONS (High Importance):\n";
-      high.forEach((d) => {
-        output += `• ${d.content}\n`;
-      });
+      high.forEach((d) => (output += `• ${d.content}\n`));
       output += "\n";
     }
-
     const allActions = [...todos, ...followUps];
-    if (allActions.length > 0) {
+    if (allActions.length) {
       output += "ACTION ITEMS:\n";
-      allActions.forEach((a) => {
-        output += `• ${a.content}\n`;
-      });
+      allActions.forEach((a) => (output += `• ${a.content}\n`));
       output += "\n";
     }
-
-    if (people.length > 0) {
+    if (people.length) {
       output += "PEOPLE / OWNERSHIP:\n";
-      people.forEach((p) => {
-        output += `• ${p.content}\n`;
-      });
+      people.forEach((p) => (output += `• ${p.content}\n`));
       output += "\n";
     }
-
-    if (questions.length > 0) {
+    if (questions.length) {
       output += "OPEN QUESTIONS:\n";
-      questions.forEach((q) => {
-        output += `• ${q.content}\n`;
-      });
+      questions.forEach((q) => (output += `• ${q.content}\n`));
     }
-
     navigator.clipboard.writeText(output);
     setCopied(true);
     toast.success("Summary copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
-
-  const getCardsByType = (type: CardType) => cards.filter((c) => c.type === type);
-
-  // Update column configuration and order
-  const columnConfig = {
-    high_importance: {
-      title: "🔥 High Importance",
-      bgClass: "bg-red-500/10 border-red-500/30",
-      cardBg: "bg-red-500/20 border-red-400/40 hover:bg-red-500/30",
-    },
-    todo: {
-      title: "📝 To Do",
-      bgClass: "bg-blue-500/10 border-blue-500/30",
-      cardBg: "bg-blue-500/20 border-blue-400/40 hover:bg-blue-500/30",
-    },
-    people: {
-      title: "👥 People",
-      bgClass: "bg-purple-500/10 border-purple-500/30",
-      cardBg: "bg-purple-500/20 border-purple-400/40 hover:bg-purple-500/30",
-    },
-    questions: {
-      title: "❓ Questions",
-      bgClass: "bg-yellow-500/10 border-yellow-500/30",
-      cardBg: "bg-yellow-500/20 border-yellow-400/40 hover:bg-yellow-500/30",
-    },
-    follow_up: {
-      title: "🔁 Follow-up",
-      bgClass: "bg-emerald-500/10 border-emerald-500/30",
-      cardBg: "bg-emerald-500/20 border-emerald-400/40 hover:bg-emerald-500/30",
-    },
-  } as const;
 
   if (isLoading) {
     return (
@@ -369,9 +270,21 @@ export default function Dashboard() {
     );
   }
 
+  const isThinkingBoard = freeCards.length > 0; // after AI processing
+
+  // Column helpers for Input Mode preview
+  const byType = (type: CardType) => previewCards.filter((c) => c.type === type);
+  const columnMeta: Record<CardType, { title: string; badge: string }> = {
+    high_importance: { title: "High Importance", badge: "🔥" },
+    todo: { title: "To Do", badge: "📝" },
+    people: { title: "People Involved", badge: "👥" },
+    questions: { title: "Questions", badge: "❓" },
+    follow_up: { title: "Follow-ups", badge: "🔁" },
+  };
+
   return (
     <div className="min-h-screen relative overflow-visible bg-background">
-      {/* Page Backdrop (light / dark) */}
+      {/* Backdrops */}
       <div className="absolute inset-0 z-0 dark:hidden">
         <img
           src="https://harmless-tapir-303.convex.cloud/api/storage/026444ea-d6b5-478a-a55b-3f9a42c5430a"
@@ -387,7 +300,7 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Top Dock Navigation */}
+      {/* Top Dock */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
         <Dock magnification={60} distance={100} className="pointer-events-auto">
           <DockItem>
@@ -410,11 +323,7 @@ export default function Dashboard() {
             <DockLabel>Theme</DockLabel>
             <DockIcon>
               <div onClick={toggleTheme} className="cursor-pointer">
-                {theme === "light" ? (
-                  <Moon className="h-5 w-5" />
-                ) : (
-                  <Sun className="h-5 w-5" />
-                )}
+                {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
               </div>
             </DockIcon>
           </DockItem>
@@ -427,7 +336,7 @@ export default function Dashboard() {
         </Dock>
       </div>
 
-      {/* Header */}
+      {/* Glass Navbar */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -435,14 +344,12 @@ export default function Dashboard() {
       >
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
-            <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Sans Forgetica', sans-serif" }}>Nulsify</h1>
+            <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Sans Forgetica', sans-serif" }}>
+              Nulsify
+            </h1>
           </div>
           <div className="flex items-center gap-4">
-            {user && (
-              <span className="text-muted-foreground text-sm">
-                {user.email || "Guest User"}
-              </span>
-            )}
+            {user && <span className="text-muted-foreground text-sm">{user.email || "Guest User"}</span>}
             <Button variant="outline" onClick={signOut} className="w-28">
               Log Out
             </Button>
@@ -450,136 +357,165 @@ export default function Dashboard() {
         </div>
       </motion.header>
 
-      {/* Main Content */}
+      {/* Content */}
       <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
-        {/* Input Section - hide when we have cards (board-only view) */}
-        {cards.length === 0 && (
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="mb-8 relative"
-          >
-            <Card className="backdrop-blur-xl bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10 p-6 shadow-xl relative overflow-hidden">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
-              </div>
-              <input
-                type="text"
-                value={noteTitle}
-                onChange={(e) => setNoteTitle(e.target.value)}
-                placeholder="Note title (optional)"
-                className="w-full px-4 py-2 mb-3 rounded-lg border border-border bg-background/50 dark:bg-background/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-              />
-              <Textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Type Here..."
-                className="min-h-[200px] resize-none bg-background/50 dark:bg-background/80 border-border focus:border-primary transition-all duration-200"
-              />
-              <div className="flex gap-3 mt-4 flex-wrap">
-                <GradientButton
-                  onClick={handleProcess}
-                  disabled={!notes.trim()}
-                >
-                  Process Notes
-                </GradientButton>
-                {cards.length > 0 && (
-                  <>
-                    <Button
-                      onClick={handleExport}
-                      variant="outline"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="h-4 w-4 mr-2" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4 mr-2" />
-                          Copy Summary
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      onClick={handleSaveNote}
-                      variant="default"
-                    >
-                      <FileText className="h-4 w-4 mr-2" />
-                      Save Note
-                    </Button>
-                  </>
-                )}
-              </div>
-            </Card>
-          </motion.div>
-        )}
+        <AnimatePresence mode="wait">
+          {!isThinkingBoard ? (
+            <motion.div
+              key="input-mode"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3 }}
+            >
+              {/* Grid: Left Input / Right Preview Columns */}
+              <div className="grid grid-cols-12 gap-6">
+                {/* Left: Notes Input */}
+                <div className="col-span-12 lg:col-span-5">
+                  <Card className="backdrop-blur-2xl bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10 p-6 shadow-xl">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      <h2 className="text-lg font-semibold text-foreground">✨ Paste Your Meeting Notes</h2>
+                    </div>
+                    <input
+                      type="text"
+                      value={noteTitle}
+                      onChange={(e) => setNoteTitle(e.target.value)}
+                      placeholder="Note title (optional)"
+                      className="w-full px-4 py-2 mb-3 rounded-full border border-white/20 dark:border-white/10 bg-background/50 dark:bg-background/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+                    />
+                    <Textarea
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Type Here..."
+                      className="min-h-[260px] resize-none bg-background/50 dark:bg-background/80 border-white/20 dark:border-white/10 focus:border-primary transition-all"
+                    />
+                    <div className="flex gap-3 mt-4 flex-wrap">
+                      <Button onClick={handleProcess} disabled={!notes.trim()} className="gap-2">
+                        <Sparkles className="h-4 w-4" />
+                        Summarize Notes
+                      </Button>
+                      <Button onClick={handleExport} variant="outline">
+                        {copied ? (
+                          <>
+                            <Check className="h-4 w-4 mr-2" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copy Summary
+                          </>
+                        )}
+                      </Button>
+                      <Button onClick={handleSaveNote} variant="secondary">
+                        <FileText className="h-4 w-4 mr-2" />
+                        Save Note
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
 
-        {/* Processing State */}
-        {processing && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            <Card className="backdrop-blur-xl bg-white/20 dark:bg-black/20 border-white/30 dark:border-white/20 p-8">
-              <div className="flex flex-col items-center gap-4">
-                <Loader />
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    AI is extracting key insights...
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    Analyzing your notes for decisions, action items, and questions
-                  </p>
+                {/* Right: Five Vertical Preview Columns */}
+                <div className="col-span-12 lg:col-span-7">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {/* To Do */}
+                    <PreviewColumn
+                      title={`${columnMeta.todo.badge} ${columnMeta.todo.title}`}
+                      items={byType("todo")}
+                    />
+                    {/* People */}
+                    <PreviewColumn
+                      title={`${columnMeta.people.badge} ${columnMeta.people.title}`}
+                      items={byType("people")}
+                    />
+                    {/* Follow-ups */}
+                    <PreviewColumn
+                      title={`${columnMeta.follow_up.badge} ${columnMeta.follow_up.title}`}
+                      items={byType("follow_up")}
+                    />
+                    {/* High Importance */}
+                    <PreviewColumn
+                      title={`${columnMeta.high_importance.badge} ${columnMeta.high_importance.title}`}
+                      items={byType("high_importance")}
+                    />
+                    {/* Questions */}
+                    <PreviewColumn
+                      title={`${columnMeta.questions.badge} ${columnMeta.questions.title}`}
+                      items={byType("questions")}
+                    />
+                  </div>
                 </div>
               </div>
-            </Card>
-          </motion.div>
-        )}
 
-        {/* Input Mode FAB */}
-        {cards.length === 0 && (
-          <FabButton onClick={handleProcess} label="Summarize Notes" />
-        )}
-
-        {/* Board Section */}
-        {cards.length > 0 && (
-          <div className="mt-4">
-            <BoardContainer
-              cards={freeCards}
-              setCards={setFreeCards}
-              zoom={zoom}
-              setZoom={setZoom}
-              onThemeToggle={toggleTheme}
-              isDark={theme === "dark"}
-            />
-            <div className="mt-6 flex gap-3">
-              <Button onClick={handleExport} variant="outline">
-                {copied ? (
-                  <>
-                    <Check className="h-4 w-4 mr-2" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy Summary
-                  </>
-                )}
-              </Button>
-              <Button onClick={handleSaveNote} variant="default">
-                <FileText className="h-4 w-4 mr-2" />
-                Save Note
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Empty state if no cards and not processing remains unchanged */}
+              {/* FAB */}
+              <FabButton onClick={handleProcess} label="Summarize Notes" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="thinking-board"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="mt-2"
+            >
+              <BoardContainer
+                cards={freeCards}
+                setCards={setFreeCards}
+                zoom={zoom}
+                setZoom={setZoom}
+                onThemeToggle={toggleTheme}
+                isDark={theme === "dark"}
+              />
+              <div className="mt-6 flex gap-3">
+                <Button onClick={handleExport} variant="outline">
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Summary
+                    </>
+                  )}
+                </Button>
+                <Button onClick={handleSaveNote} variant="default">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Save Note
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+// ... keep existing code (helper preview column component for input mode)
+function PreviewColumn({ title, items }: { title: string; items: Array<{ id: string; content: string }> }) {
+  return (
+    <Card className="backdrop-blur-2xl bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10 p-4 min-h-[180px]">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+      </div>
+      <div className="space-y-2">
+        {items.length === 0 ? (
+          <div className="text-xs text-muted-foreground">No items yet</div>
+        ) : (
+          items.slice(0, 6).map((i) => (
+            <div
+              key={i.id}
+              className="text-sm rounded-md border border-white/20 dark:border-white/10 bg-white/10 dark:bg-white/5 px-3 py-2"
+            >
+              {i.content}
+            </div>
+          ))
+        )}
+      </div>
+    </Card>
   );
 }
