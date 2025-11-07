@@ -270,7 +270,8 @@ export default function Dashboard() {
     );
   }
 
-  const isThinkingBoard = freeCards.length > 0; // after AI processing
+  // Force disable Thinking Board on this page (we'll show results on a different page)
+  const isThinkingBoard = false;
 
   // Column helpers for Input Mode preview
   const byType = (type: CardType) => previewCards.filter((c) => c.type === type);
@@ -284,22 +285,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen relative overflow-visible bg-background">
-      {/* Backdrops */}
-      <div className="absolute inset-0 z-0 dark:hidden">
-        <img
-          src="https://harmless-tapir-303.convex.cloud/api/storage/026444ea-d6b5-478a-a55b-3f9a42c5430a"
-          alt=""
-          className="w-full h-full object-cover opacity-90 pointer-events-none select-none"
-        />
-      </div>
-      <div className="absolute inset-0 z-0 hidden dark:block">
-        <img
-          src="https://harmless-tapir-303.convex.cloud/api/storage/3891c785-c9a0-42e1-8708-2d578244fb9e"
-          alt=""
-          className="w-full h-full object-cover opacity-90 pointer-events-none select-none"
-        />
-      </div>
-
       {/* Top Dock */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100]">
         <Dock magnification={60} distance={100} className="pointer-events-auto">
@@ -416,36 +401,7 @@ export default function Dashboard() {
                   </Card>
                 </div>
 
-                {/* Right: Five Vertical Preview Columns */}
-                <div className="col-span-12 lg:col-span-7">
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    {/* To Do */}
-                    <PreviewColumn
-                      title={`${columnMeta.todo.badge} ${columnMeta.todo.title}`}
-                      items={byType("todo")}
-                    />
-                    {/* People */}
-                    <PreviewColumn
-                      title={`${columnMeta.people.badge} ${columnMeta.people.title}`}
-                      items={byType("people")}
-                    />
-                    {/* Follow-ups */}
-                    <PreviewColumn
-                      title={`${columnMeta.follow_up.badge} ${columnMeta.follow_up.title}`}
-                      items={byType("follow_up")}
-                    />
-                    {/* High Importance */}
-                    <PreviewColumn
-                      title={`${columnMeta.high_importance.badge} ${columnMeta.high_importance.title}`}
-                      items={byType("high_importance")}
-                    />
-                    {/* Questions */}
-                    <PreviewColumn
-                      title={`${columnMeta.questions.badge} ${columnMeta.questions.title}`}
-                      items={byType("questions")}
-                    />
-                  </div>
-                </div>
+                {/* Right preview removed to separate input from summarized results */}
               </div>
 
               {/* FAB */}
