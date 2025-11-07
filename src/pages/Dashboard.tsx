@@ -15,8 +15,11 @@ import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { GradientButton } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
+import { FabButton } from "@/components/layout/FabButton";
+import { BoardContainer } from "@/components/board/BoardContainer";
+import type { FreeCard, CardType } from "@/types/board";
 
-type CardType = "high_importance" | "todo" | "people" | "questions" | "follow_up";
+/* removed duplicate local CardType; using imported CardType from @/types/board */
 
 interface NoteCard {
   id: string;
@@ -58,6 +61,8 @@ export default function Dashboard() {
   const [copied, setCopied] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [noteTitle, setNoteTitle] = useState("");
+  const [freeCards, setFreeCards] = useState<FreeCard[]>([]);
+  const [zoom, setZoom] = useState(1);
   // Add a ref to ensure single toast handling per navigation (avoids StrictMode double effects)
   const handledNavigationRef = useRef(false);
 
@@ -205,22 +210,44 @@ export default function Dashboard() {
     return "action";
   };
 
+  // Initialize freeform cards when AI finishes and cards arrive
+  useEffect(() => {
+    if (cards.length > 0) {
+      // Auto place into a grid for first render of board
+      const cols = Math.max(1, Math.floor((window.innerWidth - 200) / 320));
+      const initial: FreeCard[] = cards.map((c, idx) => {
+        const col = idx % cols;
+        const row = Math.floor(idx / cols);
+        const x = 48 + col * 320;
+        const y = 120 + row * 240;
+        return {
+          ...c,
+          x,
+          y,
+          w: 300,
+          h: 180,
+        };
+      });
+      setFreeCards(initial);
+    }
+  }, [cards]);
+
   const handleSaveNote = async () => {
     if (!noteTitle.trim()) {
       toast.error("Please enter a title for your note");
       return;
     }
-
-    if (cards.length === 0) {
+    const hasAny = (freeCards.length || cards.length) > 0;
+    if (!hasAny) {
       toast.error("Please process some notes before saving");
       return;
     }
-
     try {
-      const legacyCards = cards.map((c) => ({
+      const source = freeCards.length > 0 ? freeCards : cards;
+      const legacyCards = source.map((c) => ({
         id: c.id,
         content: c.content,
-        type: mapToLegacyType(c.type),
+        type: mapToLegacyType(c.type as CardType),
       }));
       await saveNote({
         title: noteTitle,
@@ -237,30 +264,23 @@ export default function Dashboard() {
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-
     const sourceType = result.source.droppableId as CardType;
     const destType = result.destination.droppableId as CardType;
 
-    if (sourceType === destType && result.source.index === result.destination.index) {
-      return;
-    }
+    // Disallow cross-column moves in input mode
+    if (sourceType !== destType) return;
+
+    if (result.source.index === result.destination.index) return;
 
     const newCards = Array.from(cards);
-    const sourceCards = newCards.filter(c => c.type === sourceType);
+    const sourceCards = newCards.filter((c) => c.type === sourceType);
     const [movedCard] = sourceCards.splice(result.source.index, 1);
-    
-    movedCard.type = destType;
-    
-    const otherCards = newCards.filter(c => c.id !== movedCard.id);
-    const destCards = otherCards.filter(c => c.type === destType);
-    destCards.splice(result.destination.index, 0, movedCard);
-    
-    const finalCards = [
-      ...otherCards.filter(c => c.type !== destType),
-      ...destCards
-    ];
+    // Insert back to same column different position
+    sourceCards.splice(result.destination.index, 0, movedCard);
 
-    setCards(finalCards);
+    // Rebuild final array: keep other types intact, replace this type's ordering
+    const others = newCards.filter((c) => c.type !== sourceType);
+    setCards([...others, ...sourceCards]);
   };
 
   const handleExport = () => {
@@ -520,74 +540,42 @@ export default function Dashboard() {
           </motion.div>
         )}
 
+        {/* Input Mode FAB */}
+        {cards.length === 0 && (
+          <FabButton onClick={handleProcess} label="Summarize Notes" />
+        )}
+
         {/* Board Section */}
         {cards.length > 0 && (
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-              {(["high_importance", "todo", "people", "questions", "follow_up"] as CardType[]).map((type, index) => {
-                const config = columnConfig[type];
-                const columnCards = getCardsByType(type);
-
-                return (
-                  <motion.div
-                    key={type}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 + index * 0.06 }}
-                  >
-                    <Card className={`backdrop-blur-sm ${config.bgClass} border p-4 shadow-lg min-h-[500px]`}>
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold text-foreground text-lg">{config.title}</h3>
-                        <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
-                          {columnCards.length}
-                        </span>
-                      </div>
-
-                      <Droppable droppableId={type}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className={`space-y-3 min-h-[380px] rounded-lg p-2 transition-colors ${
-                              snapshot.isDraggingOver ? "bg-white/10" : ""
-                            }`}
-                          >
-                            <AnimatePresence>
-                              {columnCards.map((card, index) => (
-                                <Draggable key={card.id} draggableId={card.id} index={index}>
-                                  {(provided, snapshot) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      className={`${config.cardBg} backdrop-blur-sm border rounded-lg p-4 shadow-md transition-all cursor-move ${
-                                        snapshot.isDragging ? "shadow-2xl scale-105 rotate-2 z-[300]" : ""
-                                      }`}
-                                      style={{
-                                        ...provided.draggableProps.style,
-                                        zIndex: snapshot.isDragging ? 300 : "auto",
-                                        pointerEvents: "auto",
-                                      }}
-                                    >
-                                      <p className="text-foreground text-sm leading-relaxed">{card.content}</p>
-                                    </div>
-                                  )}
-                                </Draggable>
-                              ))}
-                            </AnimatePresence>
-                            {provided.placeholder}
-                            {columnCards.length === 0 && (
-                              <div className="text-center text-muted-foreground text-sm py-8">No items yet</div>
-                            )}
-                          </div>
-                        )}
-                      </Droppable>
-                    </Card>
-                  </motion.div>
-                );
-              })}
+          <div className="mt-4">
+            <BoardContainer
+              cards={freeCards}
+              setCards={setFreeCards}
+              zoom={zoom}
+              setZoom={setZoom}
+              onThemeToggle={toggleTheme}
+              isDark={theme === "dark"}
+            />
+            <div className="mt-6 flex gap-3">
+              <Button onClick={handleExport} variant="outline">
+                {copied ? (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Summary
+                  </>
+                )}
+              </Button>
+              <Button onClick={handleSaveNote} variant="default">
+                <FileText className="h-4 w-4 mr-2" />
+                Save Note
+              </Button>
             </div>
-          </DragDropContext>
+          </div>
         )}
 
         {/* Empty state if no cards and not processing remains unchanged */}
