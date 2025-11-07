@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DroppableStateSnapshot, DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
 import { Loader2, Copy, Check, Sparkles, Home, FileText, Settings, Sun, Moon } from "lucide-react";
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
@@ -58,6 +58,8 @@ export default function Dashboard() {
   const [copied, setCopied] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [noteTitle, setNoteTitle] = useState("");
+  // Add a ref to ensure single toast handling per navigation (avoids StrictMode double effects)
+  const handledNavigationRef = useRef(false);
 
   const saveNote = useMutation(api.notes.saveNote);
   const userNotes = useQuery(api.notes.getUserNotes);
@@ -73,8 +75,10 @@ export default function Dashboard() {
     return "todo";
   };
 
-  // Adjust incoming results from ProcessNotes page
+  // Adjust incoming results from ProcessNotes page with single-toast guard and error code display
   useEffect(() => {
+    if (handledNavigationRef.current) return;
+
     if (location.state?.cards) {
       const mapped = (location.state.cards as Array<{ id: string; content: string; type?: string }>).map((c, i) => ({
         id: c.id ?? `card-${i}`,
@@ -82,13 +86,28 @@ export default function Dashboard() {
         type: normalizeType(c.type || ""),
       }));
       setCards(mapped);
-      if (location.state.noteTitle) setNoteTitle(location.state.noteTitle);
-      if (location.state.notes) setNotes(location.state.notes);
+      if (location.state.noteTitle) setNoteTitle(location.state.noteTitle as string);
+      if (location.state.notes) setNotes(location.state.notes as string);
       toast.success(`AI extracted ${mapped.length} items from your notes`);
+      handledNavigationRef.current = true;
       navigate("/dashboard", { replace: true, state: {} });
-    }
-    if (location.state?.error) {
-      toast.error(location.state.error);
+    } else if (location.state?.error) {
+      const errorMessage =
+        typeof location.state.error === "string" && location.state.error.trim()
+          ? (location.state.error as string)
+          : "Failed to process notes";
+      const errorCode =
+        (location.state as any).errorCode ??
+        (location.state as any).code ??
+        "UNKNOWN";
+
+      toast.error(
+        <div>
+          <div>{errorMessage}</div>
+          <div className="text-xs opacity-70 mt-1">Code: {String(errorCode)}</div>
+        </div>
+      );
+      handledNavigationRef.current = true;
       navigate("/dashboard", { replace: true, state: {} });
     }
   }, [location.state, navigate]);

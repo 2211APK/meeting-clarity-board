@@ -69,12 +69,24 @@ export default function ProcessNotes() {
         }, 500);
       } catch (error) {
         console.error("Error processing notes:", error);
-        // Navigate back with error
+        const errorCode =
+          (error as any)?.data?.code ??
+          (error as any)?.code ??
+          (error as any)?.response?.status ??
+          (error as any)?.name ??
+          "UNKNOWN";
+        const errorMessage =
+          (error as any)?.data?.message ??
+          (error as any)?.message ??
+          "Failed to process notes";
+
+        // Navigate back with a single error payload (Dashboard will show exactly one toast)
         navigate("/dashboard", { 
           state: { 
-            error: "Failed to process notes",
-            notes: notes,
-            noteTitle: noteTitle
+            error: errorMessage,
+            errorCode,
+            notes,
+            noteTitle
           } 
         });
       }
