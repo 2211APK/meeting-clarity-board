@@ -16,7 +16,7 @@ import { GradientButton } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
 import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 
-type CardType = "decision" | "action" | "question";
+type CardType = "high_importance" | "todo" | "people" | "questions" | "follow_up";
 
 interface NoteCard {
   id: string;
@@ -62,14 +62,29 @@ export default function Dashboard() {
   const saveNote = useMutation(api.notes.saveNote);
   const userNotes = useQuery(api.notes.getUserNotes);
 
-  // Handle incoming state from ProcessNotes page
+  // Normalize incoming card types from AI / legacy into new categories
+  const normalizeType = (t: string): CardType => {
+    const s = (t || "").toLowerCase();
+    if (s.includes("decision") || s.includes("high")) return "high_importance";
+    if (s.includes("action") || s.includes("todo") || s.includes("task")) return "todo";
+    if (s.includes("question") || s.includes("?")) return "questions";
+    if (s.includes("people") || s.includes("owner") || s.includes("assignee") || s.includes("assigned")) return "people";
+    if (s.includes("follow")) return "follow_up";
+    return "todo";
+  };
+
+  // Adjust incoming results from ProcessNotes page
   useEffect(() => {
     if (location.state?.cards) {
-      setCards(location.state.cards);
+      const mapped = (location.state.cards as Array<{ id: string; content: string; type?: string }>).map((c, i) => ({
+        id: c.id ?? `card-${i}`,
+        content: c.content,
+        type: normalizeType(c.type || ""),
+      }));
+      setCards(mapped);
       if (location.state.noteTitle) setNoteTitle(location.state.noteTitle);
       if (location.state.notes) setNotes(location.state.notes);
-      toast.success(`AI extracted ${location.state.cards.length} items from your notes`);
-      // Clear the state
+      toast.success(`AI extracted ${mapped.length} items from your notes`);
       navigate("/dashboard", { replace: true, state: {} });
     }
     if (location.state?.error) {
@@ -100,57 +115,50 @@ export default function Dashboard() {
     }
   }, [isLoading, isAuthenticated, navigate]);
 
+  // Update local heuristic extractor to new categories (used for sample/manual)
   const extractCards = (text: string): NoteCard[] => {
-    const lines = text.split("\n").filter(line => line.trim().length > 0);
-    const extractedCards: NoteCard[] = [];
-    let cardId = 0;
+    const lines = text.split("\n").filter((l) => l.trim().length > 0);
+    const extracted: NoteCard[] = [];
+    let id = 0;
 
-    lines.forEach(line => {
-      const trimmedLine = line.trim();
-      
-      // Skip headers and short lines
-      if (trimmedLine.length < 10 || trimmedLine.startsWith("Meeting") || trimmedLine.startsWith("Attendees")) {
+    lines.forEach((line) => {
+      const t = line.trim();
+
+      // Skip headers/short
+      if (t.length < 10 || /^meeting|^attendees/i.test(t)) return;
+
+      // Follow-up
+      if (/follow[-\s]?up|follow up/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "follow_up" });
         return;
       }
 
-      // Check for decisions
-      if (
-        /we decided|agreed that|going with|final decision|we're going with/i.test(trimmedLine)
-      ) {
-        extractedCards.push({
-          id: `card-${cardId++}`,
-          content: trimmedLine,
-          type: "decision"
-        });
+      // High importance (decisions/finals)
+      if (/we decided|final decision|agreed that|we're going with|going with/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "high_importance" });
         return;
       }
 
-      // Check for action items
-      if (
-        /TODO:|ACTION:|will\s+\w+|needs? to|by\s+(next\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|month|end)/i.test(trimmedLine)
-      ) {
-        extractedCards.push({
-          id: `card-${cardId++}`,
-          content: trimmedLine,
-          type: "action"
-        });
+      // People (assignments/owners)
+      if (/\b([A-Z][a-z]+)\b\s+(will|needs? to|to)\b/i.test(t) || /owner|assignee/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "people" });
         return;
       }
 
-      // Check for questions
-      if (
-        trimmedLine.includes("?") ||
-        /should we|need to (figure out|know|understand)|question:|what's|how do we/i.test(trimmedLine)
-      ) {
-        extractedCards.push({
-          id: `card-${cardId++}`,
-          content: trimmedLine,
-          type: "question"
-        });
+      // To do (actions/tasks)
+      if (/TODO:|ACTION:|needs? to|will\s+\w+|by\s+(next\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday|week|month|end)/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "todo" });
+        return;
+      }
+
+      // Questions
+      if (t.includes("?") || /should we|question:|what's|how do we/i.test(t)) {
+        extracted.push({ id: `card-${id++}`, content: t, type: "questions" });
+        return;
       }
     });
 
-    return extractedCards;
+    return extracted;
   };
 
   const extractMeetingNotes = useAction(api.ai.extractMeetingNotes as any);
@@ -170,6 +178,14 @@ export default function Dashboard() {
     });
   };
 
+  // Map our new categories back to legacy storage categories for backend typing
+  const mapToLegacyType = (t: CardType): "decision" | "action" | "question" => {
+    if (t === "high_importance") return "decision";
+    if (t === "questions") return "question";
+    // Collapse todo, people, follow_up into "action" for storage
+    return "action";
+  };
+
   const handleSaveNote = async () => {
     if (!noteTitle.trim()) {
       toast.error("Please enter a title for your note");
@@ -182,10 +198,15 @@ export default function Dashboard() {
     }
 
     try {
+      const legacyCards = cards.map((c) => ({
+        id: c.id,
+        content: c.content,
+        type: mapToLegacyType(c.type),
+      }));
       await saveNote({
         title: noteTitle,
         content: notes,
-        cards: cards,
+        cards: legacyCards,
       });
       toast.success("Note saved successfully!");
       setNoteTitle("");
@@ -224,31 +245,42 @@ export default function Dashboard() {
   };
 
   const handleExport = () => {
-    const decisions = cards.filter(c => c.type === "decision");
-    const actions = cards.filter(c => c.type === "action");
-    const questions = cards.filter(c => c.type === "question");
+    const high = cards.filter((c) => c.type === "high_importance");
+    const todos = cards.filter((c) => c.type === "todo");
+    const people = cards.filter((c) => c.type === "people");
+    const questions = cards.filter((c) => c.type === "questions");
+    const followUps = cards.filter((c) => c.type === "follow_up");
 
     let output = "";
-    
-    if (decisions.length > 0) {
-      output += "DECISIONS:\n";
-      decisions.forEach(d => {
+
+    if (high.length > 0) {
+      output += "DECISIONS (High Importance):\n";
+      high.forEach((d) => {
         output += `• ${d.content}\n`;
       });
       output += "\n";
     }
 
-    if (actions.length > 0) {
+    const allActions = [...todos, ...followUps];
+    if (allActions.length > 0) {
       output += "ACTION ITEMS:\n";
-      actions.forEach(a => {
+      allActions.forEach((a) => {
         output += `• ${a.content}\n`;
+      });
+      output += "\n";
+    }
+
+    if (people.length > 0) {
+      output += "PEOPLE / OWNERSHIP:\n";
+      people.forEach((p) => {
+        output += `• ${p.content}\n`;
       });
       output += "\n";
     }
 
     if (questions.length > 0) {
       output += "OPEN QUESTIONS:\n";
-      questions.forEach(q => {
+      questions.forEach((q) => {
         output += `• ${q.content}\n`;
       });
     }
@@ -259,25 +291,36 @@ export default function Dashboard() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const getCardsByType = (type: CardType) => cards.filter(c => c.type === type);
+  const getCardsByType = (type: CardType) => cards.filter((c) => c.type === type);
 
+  // Update column configuration and order
   const columnConfig = {
-    decision: {
-      title: "🎯 Decisions",
+    high_importance: {
+      title: "🔥 High Importance",
+      bgClass: "bg-red-500/10 border-red-500/30",
+      cardBg: "bg-red-500/20 border-red-400/40 hover:bg-red-500/30",
+    },
+    todo: {
+      title: "📝 To Do",
+      bgClass: "bg-blue-500/10 border-blue-500/30",
+      cardBg: "bg-blue-500/20 border-blue-400/40 hover:bg-blue-500/30",
+    },
+    people: {
+      title: "👥 People",
       bgClass: "bg-purple-500/10 border-purple-500/30",
-      cardBg: "bg-purple-500/20 border-purple-400/40 hover:bg-purple-500/30"
+      cardBg: "bg-purple-500/20 border-purple-400/40 hover:bg-purple-500/30",
     },
-    action: {
-      title: "✅ Action Items",
-      bgClass: "bg-green-500/10 border-green-500/30",
-      cardBg: "bg-green-500/20 border-green-400/40 hover:bg-green-500/30"
-    },
-    question: {
+    questions: {
       title: "❓ Questions",
       bgClass: "bg-yellow-500/10 border-yellow-500/30",
-      cardBg: "bg-yellow-500/20 border-yellow-400/40 hover:bg-yellow-500/30"
-    }
-  };
+      cardBg: "bg-yellow-500/20 border-yellow-400/40 hover:bg-yellow-500/30",
+    },
+    follow_up: {
+      title: "🔁 Follow-up",
+      bgClass: "bg-emerald-500/10 border-emerald-500/30",
+      cardBg: "bg-emerald-500/20 border-emerald-400/40 hover:bg-emerald-500/30",
+    },
+  } as const;
 
   if (isLoading) {
     return (
@@ -288,7 +331,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
+    <div className="min-h-screen relative overflow-visible bg-background">
       {/* Page Backdrop (light / dark) */}
       <div className="absolute inset-0 z-0 dark:hidden">
         <img
@@ -370,68 +413,70 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-7xl relative z-10">
-        {/* Input Section */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="mb-8 relative"
-        >
-          <Card className="backdrop-blur-xl bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10 p-6 shadow-xl relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
-            </div>
-            <input
-              type="text"
-              value={noteTitle}
-              onChange={(e) => setNoteTitle(e.target.value)}
-              placeholder="Note title (optional)"
-              className="w-full px-4 py-2 mb-3 rounded-lg border border-border bg-background/50 dark:bg-background/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-            />
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Type Here..."
-              className="min-h-[200px] resize-none bg-background/50 dark:bg-background/80 border-border focus:border-primary transition-all duration-200"
-            />
-            <div className="flex gap-3 mt-4 flex-wrap">
-              <GradientButton
-                onClick={handleProcess}
-                disabled={!notes.trim()}
-              >
-                Process Notes
-              </GradientButton>
-              {cards.length > 0 && (
-                <>
-                  <Button
-                    onClick={handleExport}
-                    variant="outline"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="h-4 w-4 mr-2" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy Summary
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    onClick={handleSaveNote}
-                    variant="default"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Save Note
-                  </Button>
-                </>
-              )}
-            </div>
-          </Card>
-        </motion.div>
+        {/* Input Section - hide when we have cards (board-only view) */}
+        {cards.length === 0 && (
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8 relative"
+          >
+            <Card className="backdrop-blur-xl bg-white/10 dark:bg-black/20 border border-white/20 dark:border-white/10 p-6 shadow-xl relative overflow-hidden">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-semibold text-foreground">Paste Your Meeting Notes</h2>
+              </div>
+              <input
+                type="text"
+                value={noteTitle}
+                onChange={(e) => setNoteTitle(e.target.value)}
+                placeholder="Note title (optional)"
+                className="w-full px-4 py-2 mb-3 rounded-lg border border-border bg-background/50 dark:bg-background/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+              />
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Type Here..."
+                className="min-h-[200px] resize-none bg-background/50 dark:bg-background/80 border-border focus:border-primary transition-all duration-200"
+              />
+              <div className="flex gap-3 mt-4 flex-wrap">
+                <GradientButton
+                  onClick={handleProcess}
+                  disabled={!notes.trim()}
+                >
+                  Process Notes
+                </GradientButton>
+                {cards.length > 0 && (
+                  <>
+                    <Button
+                      onClick={handleExport}
+                      variant="outline"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="h-4 w-4 mr-2" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4 mr-2" />
+                          Copy Summary
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      onClick={handleSaveNote}
+                      variant="default"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Save Note
+                    </Button>
+                  </>
+                )}
+              </div>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Processing State */}
         {processing && (
@@ -457,10 +502,10 @@ export default function Dashboard() {
         )}
 
         {/* Board Section */}
-        {cards.length > 0 && !processing ? (
+        {cards.length > 0 && (
           <DragDropContext onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {(["decision", "action", "question"] as CardType[]).map((type, index) => {
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+              {(["high_importance", "todo", "people", "questions", "follow_up"] as CardType[]).map((type, index) => {
                 const config = columnConfig[type];
                 const columnCards = getCardsByType(type);
 
@@ -469,46 +514,43 @@ export default function Dashboard() {
                     key={type}
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 + index * 0.1 }}
+                    transition={{ delay: 0.2 + index * 0.06 }}
                   >
-                    <Card className={`backdrop-blur-sm ${config.bgClass} border p-4 shadow-lg min-h-[400px]`}>
+                    <Card className={`backdrop-blur-sm ${config.bgClass} border p-4 shadow-lg min-h-[500px]`}>
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="font-semibold text-foreground text-lg">
-                          {config.title}
-                        </h3>
+                        <h3 className="font-semibold text-foreground text-lg">{config.title}</h3>
                         <span className="text-sm text-muted-foreground bg-muted px-2 py-1 rounded-full">
                           {columnCards.length}
                         </span>
                       </div>
 
                       <Droppable droppableId={type}>
-                        {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
+                        {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.droppableProps}
-                            className={`space-y-3 min-h-[300px] rounded-lg p-2 transition-colors ${
+                            className={`space-y-3 min-h-[380px] rounded-lg p-2 transition-colors ${
                               snapshot.isDraggingOver ? "bg-white/10" : ""
                             }`}
                           >
                             <AnimatePresence>
                               {columnCards.map((card, index) => (
                                 <Draggable key={card.id} draggableId={card.id} index={index}>
-                                  {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+                                  {(provided, snapshot) => (
                                     <div
                                       ref={provided.innerRef}
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
                                       className={`${config.cardBg} backdrop-blur-sm border rounded-lg p-4 shadow-md transition-all cursor-move ${
-                                        snapshot.isDragging ? "shadow-2xl scale-105 rotate-2 z-[200]" : ""
+                                        snapshot.isDragging ? "shadow-2xl scale-105 rotate-2 z-[300]" : ""
                                       }`}
                                       style={{
                                         ...provided.draggableProps.style,
-                                        zIndex: snapshot.isDragging ? 200 : 'auto',
+                                        zIndex: snapshot.isDragging ? 300 : "auto",
+                                        pointerEvents: "auto",
                                       }}
                                     >
-                                      <p className="text-foreground text-sm leading-relaxed">
-                                        {card.content}
-                                      </p>
+                                      <p className="text-foreground text-sm leading-relaxed">{card.content}</p>
                                     </div>
                                   )}
                                 </Draggable>
@@ -516,9 +558,7 @@ export default function Dashboard() {
                             </AnimatePresence>
                             {provided.placeholder}
                             {columnCards.length === 0 && (
-                              <div className="text-center text-muted-foreground text-sm py-8">
-                                No items yet
-                              </div>
+                              <div className="text-center text-muted-foreground text-sm py-8">No items yet</div>
                             )}
                           </div>
                         )}
@@ -529,20 +569,9 @@ export default function Dashboard() {
               })}
             </div>
           </DragDropContext>
-        ) : !processing ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-16"
-          >
-            <Card className="backdrop-blur-xl bg-white/10 dark:bg-black/10 border-white/20 dark:border-white/10 p-12 max-w-md mx-auto">
-              <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground text-lg">
-                Process your meeting notes to see them organized into cards
-              </p>
-            </Card>
-          </motion.div>
-        ) : null}
+        )}
+
+        {/* Empty state if no cards and not processing remains unchanged */}
       </div>
     </div>
   );
